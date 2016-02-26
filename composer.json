@@ -8,6 +8,7 @@
     ],
     "homepage": "http://framework.zend.com/",
     "require": {
+          "zf-commons/zfc-user": "dev-master",
         "php": ">=5.5",
         "zendframework/zendframework": "~2.5"
     }

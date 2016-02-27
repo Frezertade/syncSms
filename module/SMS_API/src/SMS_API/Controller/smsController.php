@@ -15,50 +15,73 @@ use Zend\View\Model\JsonModel;
 
 class smsController extends AbstractRestfulController
 {
-    protected $api_response;
+    protected $api_Response;
+    protected $api_Services = array('GetAllIncomingSMS','GetAllOutgoingSMS','GetIncomingSMS','GetOutgoingSMS');
+    protected $api_Param;
+    protected $api_CompanyID;
     public function Authenticate($data){
         /**
          * @var \SMS_API\Service\smsService $smsService
          */
         $smsService = $this->getServiceLocator()->get('SMS_API\Service\smsService');
-        if($smsService->authenticate($data['user_name'],$data['user_pass'])){
-            $this->api_response['Authentication'] = 'Success';
+        if($smsService->authenticate($data['User_Name'],$data['User_Pass'])){
             return true;
         }
-        $this->api_response['Authentication'] = 'Failed';
+        $error['Authentication'] = 'Invalid User';
+        $this->api_Response['Request_Error'] = $error;
         return false;
     }
     public function getList()
     {
-        $this->api_response['Request_Time'] = time();
         if($this->isValidRequest($_GET)){
             if($this->Authenticate($_GET)){
 
             }
         }
-        $this->api_response['Response_Time'] = time();
-        return new JsonModel($this->api_response);
+        return new JsonModel($this->api_Response);
     }
     public function create($data)
     {
-        $this->api_response['Request_Time'] = time();
+        /**
+         * @var \SMS_API\Service\smsService $smsService
+         */
+        $smsService = $this->getServiceLocator()->get('SMS_API\Service\smsService');
         if($this->isValidRequest($data)){
             if($this->Authenticate($data)){
-
+                if($data['Service'] == 'GetAllIncomingSMS'){
+                    $Found = $smsService->getAllIncoming($this->api_CompanyID);
+                    $this->api_Response['Response'] = $Found;
+                }
             }
         }
-        $this->api_response['Response_Time'] = time();
-        return new JsonModel($this->api_response);
+        return new JsonModel($this->api_Response);
     }
     public function isValidRequest($api_request){
-        if(isset($api_request['user_name']) && isset($api_request['user_pass']) && isset($api_request['service']) && isset($api_request['param'])){
-            $this->api_response['Request'] = 'Valid';
-            return true;
+        $this->api_Response['Request_Error'] = array();
+        if(isset($api_request['User_Name']) && isset($api_request['User_Pass'])
+            && isset($api_request['Company_Code'])
+            && isset($api_request['Service']) && isset($api_request['Param'])
+        ){
+            if(in_array($api_request['Service'],$this->api_Services)){
+                if(strlen($api_request['Company_Code']) == 8){
+                    $this->api_CompanyID = $api_request['Company_Code'];
+                    return true;
+                }else{
+                    $error['Company_Code'] = 'Invalid';
+                    $this->api_Response['Request_Error'] = $error;
+                }
+            }else{
+                $error['Service_Request'] = 'Unknown';
+                $this->api_Response['Request_Error'] = $error;
+            }
+        }else{
+            $error['Request_Format'] = 'Invalid';
+            $this->api_Response['Request_Error'] = $error;
         }
-        $this->api_response['Request'] = 'Invalid';
+
         return false;
     }
-    public function addUser(){
+    public function addUser($data){
         /**
          * @var \SMS_API\Service\smsService $smsService
          */

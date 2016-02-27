@@ -13,7 +13,9 @@ use SMS_API\Model\Hydrator\OutgoingSMSHydrator;
 use SMS_API\Model\Hydrator\UserHydrator;
 use SMS_API\Model\IncomingSMS;
 use SMS_API\Model\OutgoingSMS;
+use SMS_API\Model\SMSLog;
 use SMS_API\Model\User;
+use Zend\Crypt\Password\Bcrypt;
 use Zend\Db\Adapter\AdapterAwareTrait;
 use Zend\Db\ResultSet\HydratingResultSet;
 use Zend\Hydrator\Aggregate\AggregateHydrator;
@@ -21,6 +23,7 @@ use Zend\Hydrator\Aggregate\AggregateHydrator;
 class smsRepositoryImpl implements smsRepository
 {
     use AdapterAwareTrait;
+
 
     public function saveIncoming(IncomingSMS $sms)
     {
@@ -58,23 +61,105 @@ class smsRepositoryImpl implements smsRepository
         $sql = new \Zend\Db\Sql\Sql($this->adapter);
         $select = $sql->select();
         $select->from('user');
+        $select->where(array('user_name'=>$userName,'user_pass'=>$password));
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
-
         $hydrator = new AggregateHydrator();
         $hydrator->add(new UserHydrator());
         $resultSet = new HydratingResultSet($hydrator, new User());
         $resultSet->initialize($result);
-
         $posts = array();
 
         foreach($resultSet as $post){
             $posts[] = $post;
         }
-        print_r($resultSet);
-
-
-       // print_r($result);
+        if(sizeof($posts) == 1){
+            return 1;
+        }
+        return 0;
     }
+    public function getAuthenticationAdapter(){
+        $callback = function($encryptedPassword,$clearTextPassword){
+            $encrypter = new Bcrypt();
+            $encrypter->setCost(12);
+            return $encrypter->verify($clearTextPassword,$encryptedPassword);
+        };
+        $authenticationAdapter = new \Zend\Authentication\Adapter\DbTable\CallbackCheckAdapter(
+            $this->adapter,
+            'users',
+            'user_name',
+            'user_pass',
+            $callback
+        );
+        return $authenticationAdapter;
+    }
+
+    public function addUser(User $user)
+    {
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $insert = $sql->insert()
+            ->values(array(
+                'user_name'=>$user->getUserName(),
+                'user_pass'=>$this->Encrypt($user->getUserPass()),
+            ))
+            ->into('users');
+        $statement = $sql->prepareStatementForSqlObject($insert);
+        $result = $statement->execute();
+    }
+    public function Encrypt($password){
+        $encrypter = new Bcrypt();
+        $encrypter->setCost(12);
+        return $encrypter->create($password);
+    }
+
+    public function saveOutgoing(OutgoingSMS $sms)
+    {
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $insert = $sql->insert()
+            ->values(array(
+                'company_id'=>$sms->getCompanyId(),
+                'user_id'=>$sms->getUserId(),
+                'sms_from'=>$sms->getSmsFrom(),
+                'sms_msg'=>$sms->getSmsMsg(),
+                'sms_to'=>$sms->getSmsTo(),
+            ))
+            ->into('outgoing_sms');
+        $statement = $sql->prepareStatementForSqlObject($insert);
+        $result = $statement->execute();
+    }
+
+    public function getAllIncoming()
+    {
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $select = $sql->select();
+        $select->from('incoming_sms');
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+    }
+
+    public function getAllOutgoing()
+    {
+        // TODO: Implement getAllOutgoing() method.
+    }
+
+    public function getNewIncoming()
+    {
+        // TODO: Implement getNewIncoming() method.
+    }
+
+    public function saveSMSLog(SMSLog $sms)
+    {
+        // TODO: Implement saveSMSLog() method.
+    }
+
 
 }

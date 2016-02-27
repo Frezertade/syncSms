@@ -18,12 +18,11 @@ interface smsRepository extends RepositoryInterface
 {
     public function saveIncoming(IncomingSMS $sms);
     public function saveOutgoing(OutgoingSMS $sms);
-    public function getAllIncoming();
-    public function getAllOutgoing();
-    public function getNewIncoming();
+    public function getAllIncoming($CompanyID);
+    public function getAllOutgoing($CompanyID);
+    public function getNewIncoming($CompanyID);
     public function saveSMSLog(SMSLog $sms);
-    public function getOutgoingSMS($device_id);
-    public function isValidUser($userName,$password);
+    public function getOutgoingSMS($Device_id);
     public function getAuthenticationAdapter();
     public function addUser(User $user);
 

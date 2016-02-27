@@ -9,6 +9,7 @@
 namespace SMS_API\Repository;
 
 
+use SMS_API\Model\Hydrator\IncomingSMSHydrator;
 use SMS_API\Model\Hydrator\OutgoingSMSHydrator;
 use SMS_API\Model\Hydrator\UserHydrator;
 use SMS_API\Model\IncomingSMS;
@@ -134,7 +135,7 @@ class smsRepositoryImpl implements smsRepository
         $result = $statement->execute();
     }
 
-    public function getAllIncoming()
+    public function getAllIncoming($CompanyID)
     {
         /**
          * @var \Zend\Db\Sql\Sql $ sql
@@ -142,16 +143,43 @@ class smsRepositoryImpl implements smsRepository
         $sql = new \Zend\Db\Sql\Sql($this->adapter);
         $select = $sql->select();
         $select->from('incoming_sms');
+        $select->where(array('company_id'=>$CompanyID));
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
+        $hydrator = new AggregateHydrator();
+        $hydrator->add(new IncomingSMSHydrator());
+        $resultSet = new HydratingResultSet($hydrator, new IncomingSMS());
+        $resultSet->initialize($result);
+        $posts = array();
+        foreach($resultSet as $post){
+            $posts[] = $post;
+        }
+        return $posts;
     }
 
-    public function getAllOutgoing()
+    public function getAllOutgoing($CompanyID)
     {
-        // TODO: Implement getAllOutgoing() method.
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $select = $sql->select();
+        $select->from('outgoing_sms');
+        $select->where(array('company_id'=>$CompanyID));
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+        $hydrator = new AggregateHydrator();
+        $hydrator->add(new OutgoingSMSHydrator());
+        $resultSet = new HydratingResultSet($hydrator, new OutgoingSMS());
+        $resultSet->initialize($result);
+        $posts = array();
+        foreach($resultSet as $post){
+            $posts[] = $post;
+        }
+        return $posts;
     }
 
-    public function getNewIncoming()
+    public function getNewIncoming($CompanyID)
     {
         // TODO: Implement getNewIncoming() method.
     }

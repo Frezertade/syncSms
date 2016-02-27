@@ -9,7 +9,11 @@
 namespace SMS_API\Repository;
 
 
-interface smsRepository
+use SMS_API\Model\IncomingSMS;
+interface smsRepository extends RepositoryInterface
 {
+    public function saveIncoming(IncomingSMS $sms);
+    public function getOutgoingSMS($device_id);
+    public function isValidUser($userName,$password);
 
 }

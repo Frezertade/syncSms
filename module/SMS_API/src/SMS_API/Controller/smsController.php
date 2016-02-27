@@ -16,10 +16,14 @@ class smsController extends AbstractRestfulController
 {
     public function getList()
     {
-        /*
-         * GET request will arrive here
+        /**
+         * @var \SMS_API\Service\smsService $smsService
          */
-        return new JsonModel();
+        $smsService = $this->getServiceLocator()->get('SMS_API\Service\smsService');
+        $smsService->isValidUser('dasdsad','sadasdsad');
+
+
+        return new JsonModel(array('bengeos'=>'sadajsdh'));
     }
     public function create($data)
     {

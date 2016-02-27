@@ -9,7 +9,9 @@
 namespace SMS_API\Repository;
 
 
-interface RepositoryInterface
+use Zend\Db\Adapter\AdapterAwareInterface;
+
+interface RepositoryInterface extends AdapterAwareInterface
 {
 
 }

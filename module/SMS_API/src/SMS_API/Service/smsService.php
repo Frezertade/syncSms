@@ -9,7 +9,12 @@
 namespace SMS_API\Service;
 
 
+use SMS_API\Model\IncomingSMS;
+
 interface smsService
 {
+    public function saveIncoming(IncomingSMS $sms);
+    public function getOutgoingSMS($device_id);
+    public function isValidUser($userName,$password);
 
 }

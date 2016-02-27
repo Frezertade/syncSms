@@ -81,5 +81,15 @@ class smsServiceImpl implements smsService
         return $this->smsRepository->addUser($user);
     }
 
+    public function getAllIncoming($CompanyID)
+    {
+        return $this->smsRepository->getAllIncoming($CompanyID);
+    }
+
+    public function getAllOutgoing($CompanyID)
+    {
+        return $this->smsRepository->getAllOutgoing($CompanyID);
+    }
+
 
 }

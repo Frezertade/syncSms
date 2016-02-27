@@ -20,5 +20,7 @@ interface smsService
     public function getAuthenticationService();
     public function authenticate($userName,$userPass);
     public function addUser(User $user);
+    public function getAllIncoming($CompanyID);
+    public function getAllOutgoing($CompanyID);
 
 }

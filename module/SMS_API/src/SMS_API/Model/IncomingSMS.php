@@ -11,14 +11,11 @@ namespace SMS_API\Model;
 
 class IncomingSMS
 {
+    protected $id;
     /**
      * @var int
      */
-    protected $compny_id;
-    /**
-     * @var int
-     */
-    protected $user_id;
+    protected $company_id;
     /**
      * @var string
      */
@@ -39,37 +36,41 @@ class IncomingSMS
      * @var string
      */
     protected $sms_to;
+    /**
+     * @var string
+     */
+    protected $created;
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
     /**
      * @return int
      */
-    public function getCompnyId()
+    public function getCompanyId()
     {
-        return $this->compny_id;
+        return $this->company_id;
     }
 
     /**
-     * @param int $compny_id
+     * @param int $company_id
      */
-    public function setCompnyId($compny_id)
+    public function setCompanyId($company_id)
     {
-        $this->compny_id = $compny_id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getUserId()
-    {
-        return $this->user_id;
-    }
-
-    /**
-     * @param int $user_id
-     */
-    public function setUserId($user_id)
-    {
-        $this->user_id = $user_id;
+        $this->company_id = $company_id;
     }
 
     /**
@@ -152,6 +153,32 @@ class IncomingSMS
         $this->sms_to = $sms_to;
     }
 
+    /**
+     * @return string
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param string $created
+     */
+    public function setCreated($created)
+    {
+        $this->created = $created;
+    }
+
+    public function getArray(){
+        return array(
+            'company_id' => $this->getCompnyId(),
+            'sms_id' => $this->getSmsMsg(),
+            'sms_msg' => $this->getSmsMsg(),
+            'sms_to' => $this->getSmsTo(),
+            'sms_from' => $this->getSmsFrom(),
+            'created' => $this->getCreated(),
+        );
+    }
 
 
 }

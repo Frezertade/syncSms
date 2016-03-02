@@ -9,6 +9,8 @@
 namespace SMS_API\Controller;
 
 
+use SMS_API\Model\IncomingSMS;
+use SMS_API\Model\SyncDevice;
 use SMS_API\Model\User;
 use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
@@ -16,15 +18,23 @@ use Zend\View\Model\JsonModel;
 class smsController extends AbstractRestfulController
 {
     protected $api_Response;
-    protected $api_Services = array('GetAllIncomingSMS','GetAllOutgoingSMS','GetIncomingSMS','GetOutgoingSMS');
+    protected $api_Services = array('GetAllIncomingSMS','GetAllOutgoingSMS','GetIncomingSMS','GetOutgoingSMS','NewOutgoing','AddUser','NewIncoming');
     protected $api_Param;
     protected $api_CompanyID;
+    protected $user;
+    /**
+     * @var \SMS_API\Model\SyncDevice $syncDevice
+     */
+    protected $syncDevice;
     public function Authenticate($data){
         /**
          * @var \SMS_API\Service\smsService $smsService
          */
         $smsService = $this->getServiceLocator()->get('SMS_API\Service\smsService');
         if($smsService->authenticate($data['User_Name'],$data['User_Pass'])){
+            $this->user = new User();
+            $this->user->setUserName($data['User_Name']);
+            $this->user->setUserPass($data['User_Pass']);
             return true;
         }
         $error['Authentication'] = 'Invalid User';
@@ -49,27 +59,58 @@ class smsController extends AbstractRestfulController
         if($this->isValidRequest($data)){
             if($this->Authenticate($data)){
                 if($data['Service'] == 'GetAllIncomingSMS'){
-                    $Found = $smsService->getAllIncoming($this->api_CompanyID);
-                    $this->api_Response['Response'] = $Found;
+                    $IncomingSMS = $smsService->getAllIncoming($this->user);
+                    $this->api_Response['Response'] = $IncomingSMS;
+                }else if($data['Service'] == 'GetAllOutgoingSMS'){
+                    $OutgoingSMS = $smsService->getAllOutgoing($this->user);
+                    $this->api_Response['Response'] = $OutgoingSMS;
+                }else if($data['Service'] == 'GetRole'){
+                    $UserComeRole = $smsService->getComRole($this->user);
+                    $this->api_Response['Response'] = $UserComeRole;
+                }else if($data['Service'] == 'AddUser'){
+                    $new_user = new User();
+                    $new_user->setUserName('BENGEOS');
+                    $new_user->setUserPass('Pass');
+                    $UserComeRole = $smsService->addUser($new_user);
+                    $this->api_Response['Response'] = $UserComeRole;
+                }else if($data['Service'] == 'NewIncoming'){
+                    $newIncoming = $smsService->getNewIncoming($this->user);
+                    $this->api_Response['Response'] = $newIncoming;
+                }else if($data['Service'] == 'NewOutgoing'){
+                    $newOutgoing = $smsService->getNewOutgoing($this->user);
+                    $this->api_Response['Response'] = $newOutgoing;
                 }
             }
+        }else if($this->isValidSyncDevice($data)){
+            $new_sms = new IncomingSMS();
+            $new_sms->setCompnyId($this->syncDevice->getCompanyID());
+            $new_sms->setSmsTo($data['send_to']);
+            $new_sms->setSmsFrom($data['from']);
+            $new_sms->setSmsMsg($data['message']);
+
+            $newIncoming = $smsService->saveIncoming($new_sms);
         }
         return new JsonModel($this->api_Response);
+    }
+    public function isValidSyncDevice($api_request){
+        $this->api_Response['Request_Error'] = array();
+        if(isset($api_request['secret']) && isset($api_request['from']) && isset($api_request['sent_to'])
+            && isset($api_request['message'])&& isset($api_request['message_id']) && isset($api_request['device_id'])){
+            $this->syncDevice = new SyncDevice();
+            $this->syncDevice->setDeviceID($api_request['device_id']);
+            $this->syncDevice->setSecretNo($api_request['secret']);
+            return true;
+        }else{
+            return false;
+        }
     }
     public function isValidRequest($api_request){
         $this->api_Response['Request_Error'] = array();
         if(isset($api_request['User_Name']) && isset($api_request['User_Pass'])
-            && isset($api_request['Company_Code'])
             && isset($api_request['Service']) && isset($api_request['Param'])
         ){
             if(in_array($api_request['Service'],$this->api_Services)){
-                if(strlen($api_request['Company_Code']) == 8){
-                    $this->api_CompanyID = $api_request['Company_Code'];
                     return true;
-                }else{
-                    $error['Company_Code'] = 'Invalid';
-                    $this->api_Response['Request_Error'] = $error;
-                }
             }else{
                 $error['Service_Request'] = 'Unknown';
                 $this->api_Response['Request_Error'] = $error;

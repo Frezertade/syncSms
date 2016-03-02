@@ -9,6 +9,7 @@
 namespace SMS_API\Repository;
 
 
+use SMS_API\Model\Company;
 use SMS_API\Model\IncomingSMS;
 use SMS_API\Model\OutgoingSMS;
 use SMS_API\Model\SyncDevice;
@@ -30,5 +31,6 @@ interface smsRepository extends RepositoryInterface
     public function getComRole(User $user);
     public function isValidUser(User $user);
     public function isValidDevice(SyncDevice $device);
+    public function getCompany(Company $company);
 
 }

@@ -9,6 +9,7 @@
 namespace SMS_API\Repository;
 
 
+use SMS_API\Model\Company;
 use SMS_API\Model\Hydrator;
 use SMS_API\Model\IncomingSMS;
 use SMS_API\Model\OutgoingSMS;
@@ -21,8 +22,6 @@ use Zend\Db\Adapter\AdapterAwareTrait;
 class smsRepositoryImpl implements smsRepository
 {
     use AdapterAwareTrait;
-
-
     public function saveIncoming(IncomingSMS $sms)
     {
         /**
@@ -38,7 +37,7 @@ class smsRepositoryImpl implements smsRepository
                 'sms_from'=>$sms->getSmsFrom(),
                 'sms_to'=>$sms->getSmsTo(),
             ))
-            ->into('users');
+            ->into('incoming_sms');
         $statement = $sql->prepareStatementForSqlObject($insert);
         $result = $statement->execute();
         return $result->valid();
@@ -296,6 +295,32 @@ class smsRepositoryImpl implements smsRepository
             ->into('outgoing_sms_log');
         $statement = $sql->prepareStatementForSqlObject($insert);
         $result = $statement->execute();
+    }
+
+    /**
+     * @param Company $company
+     * @return \SMS_API\Model\Company
+     */
+    public function getCompany(Company $company)
+    {
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $select = $sql->select();
+        $select->from(array('U'=>'company'));
+        $select->where(array('secret_num'=>$company->getSecret()));
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Hydrate($posts,new Company());
     }
 
 

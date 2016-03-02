@@ -50,7 +50,19 @@ class Hydrator
                 $Found = $New_Data;
             }
             return $Found;
+        }else if($DataType instanceof Company){
+            $Found = null;
+            foreach($PDO_Posts as $data){
+                $New_Data = new Company();
+                $New_Data->setId(isset($data['id'])? intval($data['id']):null);
+                $New_Data->setName(isset($data['name'])? $data['name']:null);
+                $New_Data->setSecret(isset($data['secret_num'])? $data['secret_num']:null);
+                $New_Data->setCreated(isset($data['created'])? $data['created']:null);
+                $Found = $New_Data;
+            }
+            return $Found;
         }
+
     }
     public function Extract($PDO_Posts,$DataType){
         if($DataType instanceof IncomingSMS){
@@ -90,6 +102,17 @@ class Hydrator
                 $New_Data->setRole(isset($data['role'])? intval($data['role']):null);
                 $New_Data->setCreated(isset($data['created'])? $data['created']:null);
                 $New_Data->setUpdated(isset($data['updated'])? $data['updated']:null);
+                $Found[] = $New_Data->getArray();
+            }
+            return $Found;
+        }else if($DataType instanceof Company){
+            $Found = null;
+            foreach($PDO_Posts as $data){
+                $New_Data = new Company();
+                $New_Data->setId(isset($data['id'])? intval($data['id']):null);
+                $New_Data->setName(isset($data['name'])? $data['name']:null);
+                $New_Data->setSecret(isset($data['secret_num'])? $data['secret_num']:null);
+                $New_Data->setCreated(isset($data['created'])? $data['created']:null);
                 $Found[] = $New_Data->getArray();
             }
             return $Found;

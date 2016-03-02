@@ -69,7 +69,7 @@ class smsController extends AbstractRestfulController
                     $this->api_Response['Response'] = $UserComeRole;
                 }else if($data['Service'] == 'AddUser'){
                     $new_user = new User();
-                    $new_user->setUserName('BENGEOS');
+                    $new_user->setUserName('');
                     $new_user->setUserPass('Pass');
                     $UserComeRole = $smsService->addUser($new_user);
                     $this->api_Response['Response'] = $UserComeRole;
@@ -83,16 +83,20 @@ class smsController extends AbstractRestfulController
             }
         }else if($this->isValidSyncDevice($data)){
             $new_sms = new IncomingSMS();
-            $new_sms->setCompnyId($this->syncDevice->getCompanyID());
-            $new_sms->setSmsTo($data['send_to']);
+            $new_sms->setSmsId($data['message_id']);
+            $new_sms->setCompanyId($this->syncDevice->getCompanyID());
+            $new_sms->setSmsTo($data['sent_to']);
             $new_sms->setSmsFrom($data['from']);
             $new_sms->setSmsMsg($data['message']);
-
             $newIncoming = $smsService->saveIncoming($new_sms);
         }
         return new JsonModel($this->api_Response);
     }
     public function isValidSyncDevice($api_request){
+        /**
+         * @var \SMS_API\Service\smsService $smsService
+         */
+        $smsService = $this->getServiceLocator()->get('SMS_API\Service\smsService');
         $this->api_Response['Request_Error'] = array();
         if(isset($api_request['secret']) && isset($api_request['from']) && isset($api_request['sent_to'])
             && isset($api_request['message'])&& isset($api_request['message_id']) && isset($api_request['device_id'])){
@@ -101,6 +105,8 @@ class smsController extends AbstractRestfulController
             $this->syncDevice->setSecretNo($api_request['secret']);
             return true;
         }else{
+            $error['Device_Request'] = 'Not known';
+            $this->api_Response['Request_Error'] = $error;
             return false;
         }
     }

@@ -10,6 +10,7 @@ namespace SMS_API\Service;
 
 
 use SMS_API\Model\IncomingSMS;
+use SMS_API\Model\SyncDevice;
 use SMS_API\Model\User;
 use Zend\Authentication\AuthenticationService;
 
@@ -30,9 +31,14 @@ class smsServiceImpl implements smsService
         $this->smsRepository->getOutgoingSMS($device_id);
     }
 
-    public function isValidUser($userName, $password)
+    public function isValidUser(User $user)
     {
-        $this->smsRepository->isValidUser($userName, $password);
+        return $this->authenticate($user->getUserName(),$user->getUserPass());
+    }
+
+    public function isValidDevice(SyncDevice $device)
+    {
+        return $this->smsRepository->isValidDevice($device);
     }
 
     /**
@@ -81,14 +87,49 @@ class smsServiceImpl implements smsService
         return $this->smsRepository->addUser($user);
     }
 
-    public function getAllIncoming($CompanyID)
+    public function getAllIncoming(User $user)
     {
-        return $this->smsRepository->getAllIncoming($CompanyID);
+        return $this->smsRepository->getAllIncoming($user);
     }
 
-    public function getAllOutgoing($CompanyID)
+    public function getAllOutgoing(User $user)
     {
-        return $this->smsRepository->getAllOutgoing($CompanyID);
+        return $this->smsRepository->getAllOutgoing($user);
+    }
+
+    public function getComRole(User $user)
+    {
+        return $this->smsRepository->getComRole($user);
+    }
+
+    public function saveIncomingLog(User $user, IncomingSMS $sms)
+    {
+        return $this->smsRepository->saveIncomingLog($user,$sms);
+    }
+
+    public function saveOutgoing(OutgoingSMS $sms)
+    {
+        return $this->smsRepository->saveOutgoing($sms);
+    }
+
+    public function saveOutgoingLog(User $user, OutgoingSMS $sms)
+    {
+        return $this->smsRepository->saveOutgoingLog($user,$sms);
+    }
+
+    public function getNewIncoming(User $user)
+    {
+        return $this->smsRepository->getNewIncoming($user);
+    }
+
+    public function getNewOutgoing(User $user)
+    {
+        return $this->smsRepository->getNewOutgoing($user);
+    }
+
+    public function saveSMSLog(User $user)
+    {
+        return $this->smsRepository->saveSMSLog($user);
     }
 
 

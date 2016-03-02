@@ -9,17 +9,14 @@
 namespace SMS_API\Repository;
 
 
-use SMS_API\Model\Hydrator\IncomingSMSHydrator;
-use SMS_API\Model\Hydrator\OutgoingSMSHydrator;
-use SMS_API\Model\Hydrator\UserHydrator;
+use SMS_API\Model\Hydrator;
 use SMS_API\Model\IncomingSMS;
 use SMS_API\Model\OutgoingSMS;
-use SMS_API\Model\SMSLog;
+use SMS_API\Model\SyncDevice;
 use SMS_API\Model\User;
+use SMS_API\Model\UserComRole;
 use Zend\Crypt\Password\Bcrypt;
 use Zend\Db\Adapter\AdapterAwareTrait;
-use Zend\Db\ResultSet\HydratingResultSet;
-use Zend\Hydrator\Aggregate\AggregateHydrator;
 
 class smsRepositoryImpl implements smsRepository
 {
@@ -28,25 +25,32 @@ class smsRepositoryImpl implements smsRepository
 
     public function saveIncoming(IncomingSMS $sms)
     {
-        // TODO: Implement saveIncoming() method.
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $insert = $sql->insert()
+            ->values(array(
+                'sms_id'=>$sms->getSmsId(),
+                'company_id'=>$sms->getCompanyId(),
+                'device_id'=>$sms->getDeviceId(),
+                'sms_msg'=>$sms->getSmsMsg(),
+                'sms_from'=>$sms->getSmsFrom(),
+                'sms_to'=>$sms->getSmsTo(),
+            ))
+            ->into('users');
+        $statement = $sql->prepareStatementForSqlObject($insert);
+        $result = $statement->execute();
+        return $result->valid();
     }
 
-    public function getOutgoingSMS($device_id)
+    public function getOutgoingSMS(User $user)
     {
         /**
          * @var \Zend\Db\Sql\Sql $ sql
          */
         $sql = new \Zend\Db\Sql\Sql($this->adapter);
-        $select = $sql->select();
-        $select->columns(array(
-            'id',
-            'company_id',
-            'user_id',
-            'sms_msg',
-            'sms_to',
-            'sms_from',
-            'created',
-        ))
+        $select = $sql->select()
             ->from(array('p'=>'incoming_sms'))
             ->where('p.username?')
             ->order('p.id DESC');
@@ -54,7 +58,7 @@ class smsRepositoryImpl implements smsRepository
         $result = $statement->execute();
     }
 
-    public function isValidUser($userName, $password)
+    public function isValidUser(User $user)
     {
         /**
          * @var \Zend\Db\Sql\Sql $ sql
@@ -62,22 +66,31 @@ class smsRepositoryImpl implements smsRepository
         $sql = new \Zend\Db\Sql\Sql($this->adapter);
         $select = $sql->select();
         $select->from('user');
-        $select->where(array('user_name'=>$userName,'user_pass'=>$password));
+        $select->where(array('user_name'=>$user->getUserName(),'user_pass'=>$user->getUserPass()));
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
-        $hydrator = new AggregateHydrator();
-        $hydrator->add(new UserHydrator());
-        $resultSet = new HydratingResultSet($hydrator, new User());
-        $resultSet->initialize($result);
-        $posts = array();
-
-        foreach($resultSet as $post){
-            $posts[] = $post;
+        if($result->count() == 1){
+            return true;
+        }else{
+            return false;
         }
-        if(sizeof($posts) == 1){
-            return 1;
+    }
+    public function isValidDevice(SyncDevice $device)
+    {
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $select = $sql->select();
+        $select->from('devices');
+        $select->where(array('secret_num'=>$device->getSecretNo()));
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+        if($result->count() == 1){
+            return true;
+        }else{
+            return false;
         }
-        return 0;
     }
     public function getAuthenticationAdapter(){
         $callback = function($encryptedPassword,$clearTextPassword){
@@ -135,7 +148,7 @@ class smsRepositoryImpl implements smsRepository
         $result = $statement->execute();
     }
 
-    public function getAllIncoming($CompanyID)
+    public function getAllIncoming(User $user)
     {
         /**
          * @var \Zend\Db\Sql\Sql $ sql
@@ -143,21 +156,21 @@ class smsRepositoryImpl implements smsRepository
         $sql = new \Zend\Db\Sql\Sql($this->adapter);
         $select = $sql->select();
         $select->from('incoming_sms');
-        $select->where(array('company_id'=>$CompanyID));
+        $select->where(array('company_id'=>$this->getComRole($user)->getCompanyID()));
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
-        $hydrator = new AggregateHydrator();
-        $hydrator->add(new IncomingSMSHydrator());
-        $resultSet = new HydratingResultSet($hydrator, new IncomingSMS());
-        $resultSet->initialize($result);
-        $posts = array();
-        foreach($resultSet as $post){
-            $posts[] = $post;
+        $posts = '';
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
         }
-        return $posts;
+        $hydrator = new Hydrator();
+        return $hydrator->Extract($posts,new IncomingSMS());
     }
 
-    public function getAllOutgoing($CompanyID)
+    public function getAllOutgoing(User $user)
     {
         /**
          * @var \Zend\Db\Sql\Sql $ sql
@@ -165,28 +178,124 @@ class smsRepositoryImpl implements smsRepository
         $sql = new \Zend\Db\Sql\Sql($this->adapter);
         $select = $sql->select();
         $select->from('outgoing_sms');
-        $select->where(array('company_id'=>$CompanyID));
+        $select->where(array('company_id'=>$this->getComRole($user)->getCompanyID()));
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
-        $hydrator = new AggregateHydrator();
-        $hydrator->add(new OutgoingSMSHydrator());
-        $resultSet = new HydratingResultSet($hydrator, new OutgoingSMS());
-        $resultSet->initialize($result);
-        $posts = array();
-        foreach($resultSet as $post){
-            $posts[] = $post;
+        $posts = '';
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
         }
-        return $posts;
+        $hydrator = new Hydrator();
+        return $hydrator->Extract($posts,new OutgoingSMS());
     }
 
-    public function getNewIncoming($CompanyID)
+    public function getNewIncoming(User $user)
     {
-        // TODO: Implement getNewIncoming() method.
+        $row_sql = 'SELECT * FROM incoming_sms WHERE incoming_sms.id NOT IN( SELECT incoming_sms_log.incoming_sms_id FROM incoming_sms_log ) AND incoming_sms.company_id = '.$this->getComRole($user)->getCompanyID();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Extract($posts,new IncomingSMS());
     }
 
-    public function saveSMSLog(SMSLog $sms)
+    public function getNewOutgoing(User $user)
+    {
+        $row_sql = 'SELECT * FROM outgoing_sms WHERE outgoing_sms.id NOT IN( SELECT outgoing_sms_log.outgoing_sms_id FROM outgoing_sms_log ) AND outgoing_sms.company_id = '.$this->getComRole($user)->getCompanyID();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Extract($posts,new OutgoingSMS());
+    }
+
+    public function saveSMSLog(User $user)
     {
         // TODO: Implement saveSMSLog() method.
+    }
+
+    /**
+     * @param User $user
+     * @return \SMS_API\Model\UserComRole
+     */
+    public function getComRole(User $user)
+    {
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $select = $sql->select();
+        $select->from(array('U'=>'users'));
+        $select->join(array('R'=>'user_com_role'),'U.id = R.user_id');
+        $select->where(array('user_name'=>$user->getUserName()));
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Hydrate($posts,new UserComRole());
+    }
+
+    /**
+     * save all incoming sms logs
+     *
+     * @param User $user
+     * @param IncomingSMS $sms
+     */
+    public function saveIncomingLog(User $user, IncomingSMS $sms)
+    {
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $insert = $sql->insert()
+            ->values(array(
+                'incoming_sms_id'=>$sms->getSmsId(),
+                'company_id'=>$this->getComRole($user)->getCompanyID(),
+            ))
+            ->into('incoming_sms_log');
+        $statement = $sql->prepareStatementForSqlObject($insert);
+        $result = $statement->execute();
+    }
+
+    /**
+     * @param User $user
+     * @param OutgoingSMS $sms
+     */
+    public function saveOutgoingLog(User $user, OutgoingSMS $sms)
+    {
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $insert = $sql->insert()
+            ->values(array(
+                'outgoing_sms_id'=>$sms->getSmsId(),
+                'company_id'=>$this->getComRole($user)->getCompanyID(),
+            ))
+            ->into('outgoing_sms_log');
+        $statement = $sql->prepareStatementForSqlObject($insert);
+        $result = $statement->execute();
     }
 
 

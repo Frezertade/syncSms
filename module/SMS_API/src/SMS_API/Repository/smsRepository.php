@@ -14,6 +14,7 @@ use SMS_API\Model\IncomingSMS;
 use SMS_API\Model\OutgoingSMS;
 use SMS_API\Model\SyncDevice;
 use SMS_API\Model\User;
+use SMS_API\Model\UserComRole;
 
 interface smsRepository extends RepositoryInterface
 {
@@ -32,5 +33,13 @@ interface smsRepository extends RepositoryInterface
     public function isValidUser(User $user);
     public function isValidDevice(SyncDevice $device);
     public function getCompany(Company $company);
+    public function deleteIncoming(UserComRole $user_r, IncomingSMS $sms);
+    public function deleteOutgoing(UserComRole $user_r, OutgoingSMS $sms);
+    public function deleteIncomingLog(UserComRole $user_r, IncomingSMS $sms);
+    public function deleteOutgoingLog(UserComRole $user_r, OutgoingSMS $sms);
+    public function deleteAllIncoming(UserComRole $user_r);
+    public function deleteAllOutgoing(UserComRole $user_r);
+    public function deleteAllIncomingLog(UserComRole $user_r);
+    public function deleteAllOutgoingLog(UserComRole $user_r);
 
 }

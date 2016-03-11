@@ -121,6 +121,7 @@ class smsRepositoryImpl implements smsRepository
             ->into('users');
         $statement = $sql->prepareStatementForSqlObject($insert);
         $result = $statement->execute();
+        return $result;
     }
     public function Encrypt($password){
         $encrypter = new Bcrypt();
@@ -145,6 +146,7 @@ class smsRepositoryImpl implements smsRepository
             ->into('outgoing_sms');
         $statement = $sql->prepareStatementForSqlObject($insert);
         $result = $statement->execute();
+        return $result;
     }
 
     public function getAllIncoming(User $user)
@@ -222,12 +224,6 @@ class smsRepositoryImpl implements smsRepository
         $hydrator = new Hydrator();
         return $hydrator->Extract($posts,new OutgoingSMS());
     }
-
-    public function saveSMSLog(User $user)
-    {
-        // TODO: Implement saveSMSLog() method.
-    }
-
     /**
      * @param User $user
      * @return \SMS_API\Model\UserComRole
@@ -321,6 +317,154 @@ class smsRepositoryImpl implements smsRepository
         }
         $hydrator = new Hydrator();
         return $hydrator->Hydrate($posts,new Company());
+    }
+
+    /**
+     * @param \SMS_API\Model\UserComRole $user_r
+     * @param \SMS_API\Model\IncomingSMS $sms
+     * @return bool
+     */
+    public function deleteIncoming(UserComRole $user_r, IncomingSMS $sms)
+    {
+        $row_sql = 'DELETE FROM incoming_sms WHERE id='.$sms->getId().' AND company_id='.$user_r->getCompanyID();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        print_r($result->count());
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @param \SMS_API\Model\UserComRole $user_r
+     * @param \SMS_API\Model\OutgoingSMS $sms
+     * @return bool
+     */
+    public function deleteOutgoing(UserComRole $user_r, OutgoingSMS $sms)
+    {
+        $row_sql = 'DELETE FROM outgoing_sms WHERE id='.$sms->getId().' AND company_id='.$user_r->getCompanyID();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        print_r($result->count());
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @param \SMS_API\Model\UserComRole $user_r
+     * @param \SMS_API\Model\IncomingSMS $sms
+     * @return bool
+     */
+    public function deleteIncomingLog(UserComRole $user_r, IncomingSMS $sms)
+    {
+        $row_sql = 'DELETE FROM incoming_sms_log WHERE id='.$sms->getId().' AND company_id='.$user_r->getCompanyID();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        print_r($result->count());
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @param \SMS_API\Model\UserComRole $user_r
+     * @param \SMS_API\Model\OutgoingSMS $sms
+     * @return bool
+     */
+    public function deleteOutgoingLog(UserComRole $user_r, OutgoingSMS $sms)
+    {
+        $row_sql = 'DELETE FROM outgoing_sms_log WHERE id='.$sms->getId().' AND company_id='.$user_r->getCompanyID();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        print_r($result->count());
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @param \SMS_API\Model\UserComRole $user_r
+     * @return bool
+     */
+    public function deleteAllIncoming(UserComRole $user_r)
+    {
+        $row_sql = 'DELETE FROM incoming_sms WHERE company_id='.$user_r->getCompanyID();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        print_r($result->count());
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @param \SMS_API\Model\UserComRole $user_r
+     * @return bool
+     */
+    public function deleteAllOutgoing(UserComRole $user_r)
+    {
+        $row_sql = 'DELETE FROM outgoing_sms WHERE company_id='.$user_r->getCompanyID();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        print_r($result->count());
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @param \SMS_API\Model\UserComRole $user_r
+     * @return bool
+     */
+    public function deleteAllIncomingLog(UserComRole $user_r)
+    {
+        $row_sql = 'DELETE FROM incoming_sms_log WHERE company_id='.$user_r->getCompanyID();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        print_r($result->count());
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @param \SMS_API\Model\UserComRole $user_r
+     * @return bool
+     */
+    public function deleteAllOutgoingLog(UserComRole $user_r)
+    {
+        $row_sql = 'DELETE FROM outgoing_sms_log WHERE company_id='.$user_r->getCompanyID();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        print_r($result->count());
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 

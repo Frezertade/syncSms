@@ -10,6 +10,7 @@ namespace SMS_API\Service;
 
 
 use SMS_API\Model\IncomingSMS;
+use SMS_API\Model\OutgoingSMS;
 use SMS_API\Model\SyncDevice;
 use SMS_API\Model\User;
 use Zend\Authentication\AuthenticationService;
@@ -21,6 +22,9 @@ class smsServiceImpl implements smsService
      */
     protected $smsRepository;
 
+    /**
+     * @param \SMS_API\Model\IncomingSMS $sms
+     */
     public function saveIncoming(IncomingSMS $sms)
     {
         $this->smsRepository->saveIncoming($sms);
@@ -107,29 +111,147 @@ class smsServiceImpl implements smsService
         return $this->smsRepository->saveIncomingLog($user,$sms);
     }
 
-    public function saveOutgoing(OutgoingSMS $sms)
-    {
-        return $this->smsRepository->saveOutgoing($sms);
-    }
-
-    public function saveOutgoingLog(User $user, OutgoingSMS $sms)
-    {
-        return $this->smsRepository->saveOutgoingLog($user,$sms);
-    }
-
+    /**
+     * @param \SMS_API\Model\User $user
+     * @return mixed
+     */
     public function getNewIncoming(User $user)
     {
         return $this->smsRepository->getNewIncoming($user);
     }
 
+    /**
+     * @param \SMS_API\Model\User $user
+     * @return mixed
+     */
     public function getNewOutgoing(User $user)
     {
         return $this->smsRepository->getNewOutgoing($user);
     }
 
-    public function saveSMSLog(User $user)
+    /**
+     * @param \SMS_API\Model\User $user
+     * @param \SMS_API\Model\IncomingSMS $sms
+     * @return bool
+     */
+    public function deleteIncoming(User $user, IncomingSMS $sms)
     {
-        return $this->smsRepository->saveSMSLog($user);
+        $user_role = $this->getComRole($user);
+        if($user_role != null){
+            return $this->smsRepository->deleteIncoming($user_role,$sms);
+        }else{
+            return false;
+        }
+
+    }
+
+    /**
+     * @param \SMS_API\Model\User $user
+     * @param \SMS_API\Model\IncomingSMS $sms
+     * @return bool
+     */
+    public function deleteIncomingLog(User $user, IncomingSMS $sms)
+    {
+        $user_role = $this->getComRole($user);
+        if($user_role != null){
+            return $this->smsRepository->deleteIncomingLog($user_role,$sms);
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @param \SMS_API\Model\User $user
+     * @return bool
+     */
+    public function deleteAllIncoming(User $user)
+    {
+        $user_role = $this->getComRole($user);
+        if($user_role != null){
+            return $this->smsRepository->deleteAllIncoming($user_role);
+        }else{
+            return false;
+        }
+    }
+    /**
+     * @param \SMS_API\Model\User $user
+     * @return bool
+     */
+    public function deleteAllIncomingLog(User $user)
+    {
+        $user_role = $this->getComRole($user);
+        if($user_role != null){
+            return $this->smsRepository->deleteAllIncomingLog($user_role);
+        }else{
+            return false;
+        }
+    }
+
+    public function saveOutgoing(OutgoingSMS $sms)
+    {
+        // TODO: Implement saveOutgoing() method.
+    }
+
+    public function saveOutgoingLog(User $user, OutgoingSMS $sms)
+    {
+        // TODO: Implement saveOutgoingLog() method.
+    }
+
+    /**
+     * @param \SMS_API\Model\User $user
+     * @param \SMS_API\Model\OutgoingSMS $sms
+     * @return bool
+     */
+    public function deleteOutgoing(User $user, OutgoingSMS $sms)
+    {
+        $user_role = $this->getComRole($user);
+        if($user_role != null){
+            return $this->smsRepository->deleteOutgoing($user_role,$sms);
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @param \SMS_API\Model\User $user
+     * @param \SMS_API\Model\OutgoingSMS $sms
+     * @return bool
+     */
+    public function deleteOutgoingLog(User $user, OutgoingSMS $sms)
+    {
+        $user_role = $this->getComRole($user);
+        if($user_role != null){
+            return $this->smsRepository->deleteOutgoingLog($user_role,$sms);
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @param \SMS_API\Model\User $user
+     * @return bool
+     */
+    public function deleteAllOutgoing(User $user)
+    {
+        $user_role = $this->getComRole($user);
+        if($user_role != null){
+            return $this->smsRepository->deleteAllOutgoing($user_role);
+        }else{
+            return false;
+        }
+    }
+    /**
+     * @param \SMS_API\Model\User $user
+     * @return bool
+     */
+    public function deleteAllOutgoingLog(User $user)
+    {
+        $user_role = $this->getComRole($user);
+        if($user_role != null){
+            return $this->smsRepository->deleteAllOutgoingLog($user_role);
+        }else{
+            return false;
+        }
     }
 
 

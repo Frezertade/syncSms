@@ -18,7 +18,7 @@ use Zend\View\Model\JsonModel;
 class smsController extends AbstractRestfulController
 {
     protected $api_Response;
-    protected $api_Services = array('GetAllIncomingSMS','GetAllOutgoingSMS','GetIncomingSMS','GetOutgoingSMS','NewOutgoing','AddUser','NewIncoming');
+    protected $api_Services = array('GetAllIncomingSMS','GetAllOutgoingSMS','GetIncomingSMS','GetOutgoingSMS','NewOutgoing','DeleteIncoming','NewIncoming');
     protected $api_Param;
     protected $api_CompanyID;
     protected $user;
@@ -48,7 +48,7 @@ class smsController extends AbstractRestfulController
 
             }
         }
-        return new JsonModel($this->api_Response);
+       // return new JsonModel($this->api_Response);
     }
     public function create($data)
     {
@@ -79,6 +79,11 @@ class smsController extends AbstractRestfulController
                 }else if($data['Service'] == 'NewOutgoing'){
                     $newOutgoing = $smsService->getNewOutgoing($this->user);
                     $this->api_Response['Response'] = $newOutgoing;
+                }else if($data['Service'] == 'DeleteIncoming'){
+                    $new_sms = new IncomingSMS();
+                    $new_sms->setId(6);
+                    $smsService->deleteIncoming($this->user,$new_sms);
+                    $this->api_Response['Response'] = 'Delete Request';
                 }
             }
         }else if($this->isValidSyncDevice($data)){
@@ -127,6 +132,13 @@ class smsController extends AbstractRestfulController
         }
 
         return false;
+    }
+    public function isValidParam($param,$type){
+        $is_valid = false;
+        if($type == $this->api_Services[1]){
+            is_array($param)
+        }
+        return $is_valid;
     }
     public function addUser($data){
         /**

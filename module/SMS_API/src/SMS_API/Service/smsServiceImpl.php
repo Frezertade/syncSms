@@ -101,23 +101,43 @@ class smsServiceImpl implements smsService
         return $this->smsRepository->getAllOutgoing($user);
     }
 
+    /**
+     * @param \SMS_API\Model\User $user
+     * @return \SMS_API\Model\UserComRole
+     */
     public function getComRole(User $user)
     {
         return $this->smsRepository->getComRole($user);
     }
 
+    /**
+     * @param \SMS_API\Model\User $user
+     * @param \SMS_API\Model\IncomingSMS $sms
+     * @return bool
+     */
     public function saveIncomingLog(User $user, IncomingSMS $sms)
     {
-        return $this->smsRepository->saveIncomingLog($user,$sms);
+        $user_role = $this->getComRole($user);
+        if($user_role != null){
+            return $this->smsRepository->saveIncomingLog($user,$sms);
+        }else{
+            return false;
+        }
     }
 
     /**
      * @param \SMS_API\Model\User $user
-     * @return mixed
+     * @return bool
      */
     public function getNewIncoming(User $user)
     {
-        return $this->smsRepository->getNewIncoming($user);
+        $user_role = $this->getComRole($user);
+        if($user_role != null){
+            return $this->smsRepository->getNewIncoming($user);
+        }else{
+            return false;
+        }
+
     }
 
     /**
@@ -187,14 +207,36 @@ class smsServiceImpl implements smsService
         }
     }
 
-    public function saveOutgoing(OutgoingSMS $sms)
+    /**
+     * @param \SMS_API\Model\User $user
+     * @param \SMS_API\Model\OutgoingSMS $sms
+     * @return mixed
+     */
+    public function saveOutgoing(User $user,OutgoingSMS $sms)
     {
-        // TODO: Implement saveOutgoing() method.
+        $user_role = $this->getComRole($user);
+        if($user_role != null){
+            $sms->setCompanyId($this->getComRole($user)->getCompanyID());
+            $sms->setUserId($this->getComRole($user)->getUserID());
+            return $this->smsRepository->saveOutgoing($sms);
+        }else{
+            return false;
+        }
     }
 
+    /**
+     * @param User $user
+     * @param \SMS_API\Model\OutgoingSMS $sms
+     * @return bool
+     */
     public function saveOutgoingLog(User $user, OutgoingSMS $sms)
     {
-        // TODO: Implement saveOutgoingLog() method.
+        $user_role = $this->getComRole($user);
+        if($user_role != null){
+            return $this->smsRepository->saveOutgoingLog($user_role,$sms);
+        }else{
+            return false;
+        }
     }
 
     /**

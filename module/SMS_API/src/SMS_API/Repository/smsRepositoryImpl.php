@@ -255,7 +255,7 @@ class smsRepositoryImpl implements smsRepository
      * save all incoming sms logs
      *
      * @param User $user
-     * @param IncomingSMS $sms
+     * @param \SMS_API\Model\IncomingSMS $sms
      */
     public function saveIncomingLog(User $user, IncomingSMS $sms)
     {
@@ -265,7 +265,7 @@ class smsRepositoryImpl implements smsRepository
         $sql = new \Zend\Db\Sql\Sql($this->adapter);
         $insert = $sql->insert()
             ->values(array(
-                'incoming_sms_id'=>$sms->getSmsId(),
+                'incoming_sms_id'=>$sms->getId(),
                 'company_id'=>$this->getComRole($user)->getCompanyID(),
             ))
             ->into('incoming_sms_log');
@@ -275,7 +275,7 @@ class smsRepositoryImpl implements smsRepository
 
     /**
      * @param User $user
-     * @param OutgoingSMS $sms
+     * @param \SMS_API\Model\OutgoingSMS $sms
      */
     public function saveOutgoingLog(User $user, OutgoingSMS $sms)
     {
@@ -285,7 +285,7 @@ class smsRepositoryImpl implements smsRepository
         $sql = new \Zend\Db\Sql\Sql($this->adapter);
         $insert = $sql->insert()
             ->values(array(
-                'outgoing_sms_id'=>$sms->getSmsId(),
+                'outgoing_sms_id'=>$sms->getId(),
                 'company_id'=>$this->getComRole($user)->getCompanyID(),
             ))
             ->into('outgoing_sms_log');
@@ -329,7 +329,6 @@ class smsRepositoryImpl implements smsRepository
         $row_sql = 'DELETE FROM incoming_sms WHERE id='.$sms->getId().' AND company_id='.$user_r->getCompanyID();
         $statement = $this->adapter->query($row_sql);
         $result = $statement->execute();
-        print_r($result->count());
         $posts = null;
         if($result->count()>0){
             return true;
@@ -348,7 +347,6 @@ class smsRepositoryImpl implements smsRepository
         $row_sql = 'DELETE FROM outgoing_sms WHERE id='.$sms->getId().' AND company_id='.$user_r->getCompanyID();
         $statement = $this->adapter->query($row_sql);
         $result = $statement->execute();
-        print_r($result->count());
         $posts = null;
         if($result->count()>0){
             return true;
@@ -367,7 +365,6 @@ class smsRepositoryImpl implements smsRepository
         $row_sql = 'DELETE FROM incoming_sms_log WHERE id='.$sms->getId().' AND company_id='.$user_r->getCompanyID();
         $statement = $this->adapter->query($row_sql);
         $result = $statement->execute();
-        print_r($result->count());
         $posts = null;
         if($result->count()>0){
             return true;
@@ -386,7 +383,6 @@ class smsRepositoryImpl implements smsRepository
         $row_sql = 'DELETE FROM outgoing_sms_log WHERE id='.$sms->getId().' AND company_id='.$user_r->getCompanyID();
         $statement = $this->adapter->query($row_sql);
         $result = $statement->execute();
-        print_r($result->count());
         $posts = null;
         if($result->count()>0){
             return true;
@@ -404,7 +400,6 @@ class smsRepositoryImpl implements smsRepository
         $row_sql = 'DELETE FROM incoming_sms WHERE company_id='.$user_r->getCompanyID();
         $statement = $this->adapter->query($row_sql);
         $result = $statement->execute();
-        print_r($result->count());
         $posts = null;
         if($result->count()>0){
             return true;
@@ -422,7 +417,6 @@ class smsRepositoryImpl implements smsRepository
         $row_sql = 'DELETE FROM outgoing_sms WHERE company_id='.$user_r->getCompanyID();
         $statement = $this->adapter->query($row_sql);
         $result = $statement->execute();
-        print_r($result->count());
         $posts = null;
         if($result->count()>0){
             return true;
@@ -440,7 +434,6 @@ class smsRepositoryImpl implements smsRepository
         $row_sql = 'DELETE FROM incoming_sms_log WHERE company_id='.$user_r->getCompanyID();
         $statement = $this->adapter->query($row_sql);
         $result = $statement->execute();
-        print_r($result->count());
         $posts = null;
         if($result->count()>0){
             return true;
@@ -458,7 +451,6 @@ class smsRepositoryImpl implements smsRepository
         $row_sql = 'DELETE FROM outgoing_sms_log WHERE company_id='.$user_r->getCompanyID();
         $statement = $this->adapter->query($row_sql);
         $result = $statement->execute();
-        print_r($result->count());
         $posts = null;
         if($result->count()>0){
             return true;

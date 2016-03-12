@@ -14,7 +14,7 @@ class OutgoingSMS
     /**
      * @var int
      */
-    protected $sms_id;
+    protected $id;
     /**
      * @var int
      */
@@ -43,19 +43,18 @@ class OutgoingSMS
     /**
      * @return int
      */
-    public function getSmsId()
+    public function getId()
     {
-        return $this->sms_id;
+        return $this->id;
     }
 
     /**
-     * @param int $sms_id
+     * @param int $id
      */
-    public function setSmsId($sms_id)
+    public function setId($id)
     {
-        $this->sms_id = $sms_id;
+        $this->id = $id;
     }
-
 
     /**
      * @return int
@@ -154,6 +153,7 @@ class OutgoingSMS
     }
     public function getArray(){
         return array(
+            'id'=>$this->getId(),
             'company_id' => $this->getCompanyId(),
             'user_id' => $this->getUserId(),
             'sms_msg' => $this->getSmsMsg(),

@@ -49,7 +49,7 @@ interface smsService
     public function getAllOutgoing(User $user);
     public function getNewOutgoing(User $user);
 
-    public function saveOutgoing(OutgoingSMS $sms);
+    public function saveOutgoing(User $user,OutgoingSMS $sms);
     public function saveOutgoingLog(User $user,OutgoingSMS $sms);
 
     public function deleteOutgoing(User $user, OutgoingSMS $sms);

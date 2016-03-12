@@ -171,7 +171,7 @@ class IncomingSMS
 
     public function getArray(){
         return array(
-            'company_id' => $this->getCompnyId(),
+            'company_id' => $this->getCompanyId(),
             'sms_id' => $this->getSmsMsg(),
             'sms_msg' => $this->getSmsMsg(),
             'sms_to' => $this->getSmsTo(),

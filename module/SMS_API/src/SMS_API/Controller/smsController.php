@@ -10,6 +10,7 @@ namespace SMS_API\Controller;
 
 
 use SMS_API\Model\IncomingSMS;
+use SMS_API\Model\OutgoingSMS;
 use SMS_API\Model\SyncDevice;
 use SMS_API\Model\User;
 use Zend\Mvc\Controller\AbstractRestfulController;
@@ -18,7 +19,11 @@ use Zend\View\Model\JsonModel;
 class smsController extends AbstractRestfulController
 {
     protected $api_Response;
-    protected $api_Services = array('GetAllIncomingSMS','GetAllOutgoingSMS','GetIncomingSMS','GetOutgoingSMS','NewOutgoing','DeleteIncoming','NewIncoming');
+    protected $api_Services = array(
+        'GetAllIncomingSMS','GetAllOutgoingSMS','GetNewIncomingSMS','GetAllDeliveredSMS','GetAllNotDeliveredSMS','GetNewOutgoingSMS',
+        'DeleteAllIncomingSMS','DeleteAllOutgoingSMS','DeleteAllDeliveredSMS','DeleteAllNotDeliveredSMS',
+        'DeleteIncomingSMS','DeleteOutgoingSMS','DeleteDeliveredSMS','DeleteNotDeliveredSMS',
+        'AddNewOutgoingSMS','AddNewIncomingSMSLog','AddNewOutgoingSMSLog');
     protected $api_Param;
     protected $api_CompanyID;
     protected $user;
@@ -58,35 +63,96 @@ class smsController extends AbstractRestfulController
         $smsService = $this->getServiceLocator()->get('SMS_API\Service\smsService');
         if($this->isValidRequest($data)){
             if($this->Authenticate($data)){
-                if($data['Service'] == 'GetAllIncomingSMS'){
+                if($data['Service'] == $this->api_Services[0]){
                     $IncomingSMS = $smsService->getAllIncoming($this->user);
                     $this->api_Response['Response'] = $IncomingSMS;
-                }else if($data['Service'] == 'GetAllOutgoingSMS'){
+                }else if($data['Service'] == $this->api_Services[1]){
                     $OutgoingSMS = $smsService->getAllOutgoing($this->user);
                     $this->api_Response['Response'] = $OutgoingSMS;
-                }else if($data['Service'] == 'GetRole'){
-                    $UserComeRole = $smsService->getComRole($this->user);
-                    $this->api_Response['Response'] = $UserComeRole;
-                }else if($data['Service'] == 'AddUser'){
-                    $new_user = new User();
-                    $new_user->setUserName('');
-                    $new_user->setUserPass('Pass');
-                    $UserComeRole = $smsService->addUser($new_user);
-                    $this->api_Response['Response'] = $UserComeRole;
-                }else if($data['Service'] == 'NewIncoming'){
+                }else if($data['Service'] == $this->api_Services[2]){
                     $newIncoming = $smsService->getNewIncoming($this->user);
                     $this->api_Response['Response'] = $newIncoming;
-                }else if($data['Service'] == 'NewOutgoing'){
-                    $newOutgoing = $smsService->getNewOutgoing($this->user);
-                    $this->api_Response['Response'] = $newOutgoing;
-                }else if($data['Service'] == 'DeleteIncoming'){
-                    $new_sms = new IncomingSMS();
-                    $new_sms->setId(6);
-                    $smsService->deleteIncoming($this->user,$new_sms);
-                    $this->api_Response['Response'] = 'Delete Request';
+                }else if($data['Service'] == $this->api_Services[3]){
+                    $newIncoming = $smsService->getNewIncoming($this->user);
+                    $this->api_Response['Response'] = $newIncoming;
+                }else if($data['Service'] == $this->api_Services[4]){
+                    $newIncoming = $smsService->getNewIncoming($this->user);
+                    $this->api_Response['Response'] = $newIncoming;
+                }else if($data['Service'] == $this->api_Services[5]){
+                    $newIncoming = $smsService->getNewOutgoing($this->user);
+                    $this->api_Response['Response'] = $newIncoming;
+                }else if($data['Service'] == $this->api_Services[6]){
+                    $newIncoming = $smsService->deleteAllIncoming($this->user);
+                    $this->api_Response['Response'] = $newIncoming;
+                }else if($data['Service'] == $this->api_Services[7]){
+                    $newIncoming = $smsService->deleteAllOutgoing($this->user);
+                    $this->api_Response['Response'] = $newIncoming;
+                }else if($data['Service'] == $this->api_Services[8]){
+                    $newIncoming = $smsService->deleteAllIncoming($this->user);
+                    $this->api_Response['Response'] = $newIncoming;
+                }else if($data['Service'] == $this->api_Services[9]){
+                    $newIncoming = $smsService->deleteAllIncoming($this->user);
+                    $this->api_Response['Response'] = $newIncoming;
+                }else if($data['Service'] == $this->api_Services[10]){
+                    if($this->isValidParam($data['Param'],$data['Service'])){
+                        $response = null;
+                        foreach($data['Param'] as $param){
+                            $incomingSMS = new IncomingSMS();
+                            $incomingSMS->setId($param['id']);
+                            $response[] = $smsService->deleteIncoming($this->user,$incomingSMS);
+                        }
+                        $this->api_Response['Response'] = $response;
+                    }
+                }else if($data['Service'] == $this->api_Services[11]){
+                    if($this->isValidParam($data['Param'],$data['Service'])){
+                        $response = null;
+                        foreach($data['Param'] as $param){
+                            $outgoingSMS = new OutgoingSMS();
+                            $outgoingSMS->setId($param['id']);
+                            $response[] = $smsService->deleteOutgoing($this->user,$outgoingSMS);
+                        }
+                        $this->api_Response['Response'] = $response;
+                    }
+                }else if($data['Service'] == $this->api_Services[12]){
+                    $newIncoming = $smsService->deleteAllIncoming($this->user);
+                    $this->api_Response['Response'] = $newIncoming;
+                }else if($data['Service'] == $this->api_Services[13]){
+                    $newIncoming = $smsService->deleteAllIncoming($this->user);
+                    $this->api_Response['Response'] = $newIncoming;
+                }else if($data['Service'] == $this->api_Services[14]){
+                    if($this->isValidParam($data['Param'],$data['Service'])){
+                        $response = null;
+                        foreach($data['Param'] as $param){
+                            $outgoingSMS = new OutgoingSMS();
+                            $outgoingSMS->setSmsMsg($param['sms_msg']);
+                            $outgoingSMS->setSmsTo($param['sms_to']);
+                            $response[] = $smsService->saveOutgoing($this->user,$outgoingSMS);
+                        }
+                        $this->api_Response['Response'] = $response;
+                    }
+                }else if($data['Service'] == $this->api_Services[15]){
+                    if($this->isValidParam($data['Param'],$data['Service'])){
+                        $response = null;
+                        foreach($data['Param'] as $param){
+                            $incomingSMS = new IncomingSMS();
+                            $incomingSMS->setId($param['id']);
+                            $response[] = $smsService->saveIncomingLog($this->user,$incomingSMS);
+                        }
+                        $this->api_Response['Response'] = $response;
+                    }
+                }else if($data['Service'] == $this->api_Services[16]){
+                    if($this->isValidParam($data['Param'],$data['Service'])){
+                        $response = null;
+                        foreach($data['Param'] as $param){
+                            $outgoingSMS = new OutgoingSMS();
+                            $outgoingSMS->setId($param['id']);
+                            $response[] = $smsService->saveOutgoing($this->user,$outgoingSMS);
+                        }
+                        $this->api_Response['Response'] = $response;
+                    }
                 }
             }
-        }else if($this->isValidSyncDevice($data)){
+        }else if(isset($data['device_id']) && $this->isValidSyncDevice($data)){
             $new_sms = new IncomingSMS();
             $new_sms->setSmsId($data['message_id']);
             $new_sms->setCompanyId($this->syncDevice->getCompanyID());
@@ -135,9 +201,90 @@ class smsController extends AbstractRestfulController
     }
     public function isValidParam($param,$type){
         $is_valid = false;
-        if($type == $this->api_Services[1]){
-            is_array($param)
+        if(!is_array($param)){
+            if($type == $this->api_Services[10]){
+                foreach($param as $items){
+                    if(isset($items['id'])){
+                        $is_valid = true;
+                    }else{
+                        $error['Parameter Error'] = 'Invalid Incoming SMS Param';
+                        $this->api_Response['Request_Error'] = $error;
+                        $is_valid = false;
+                        break;
+                    }
+                }
+            }elseif($type == $this->api_Services[11]){
+                foreach($param as $items){
+                    if(isset($items['id'])){
+                        $is_valid = true;
+                    }else{
+                        $error['Parameter Error'] = 'Invalid Outgoing SMS Param';
+                        $this->api_Response['Request_Error'] = $error;
+                        $is_valid = false;
+                        break;
+                    }
+                }
+            }elseif($type == $this->api_Services[12]){
+                foreach($param as $items){
+                    if(isset($items['id'])){
+                        $is_valid = true;
+                    }else{
+                        $error['Parameter Error'] = 'Invalid Delivered SMS Param';
+                        $this->api_Response['Request_Error'] = $error;
+                        $is_valid = false;
+                        break;
+                    }
+                }
+            }elseif($type == $this->api_Services[13]){
+                foreach($param as $items){
+                    if(isset($items['id'])){
+                        $is_valid = true;
+                    }else{
+                        $error['Parameter Error'] = 'Invalid Delivered Not SMS Param';
+                        $this->api_Response['Request_Error'] = $error;
+                        $is_valid = false;
+                        break;
+                    }
+                }
+            }elseif($type == $this->api_Services[14]){
+                foreach($param as $items){
+                    if(isset($items['sms_msg']) && isset($items['sms_to'])){
+                        $is_valid = true;
+                    }else{
+                        $error['Parameter Error'] = 'Invalid Outgoing Param';
+                        $this->api_Response['Request_Error'] = $error;
+                        $is_valid = false;
+                        break;
+                    }
+                }
+            }elseif($type == $this->api_Services[15]){
+                foreach($param as $items){
+                    if(isset($items['incoming_sms_id'])){
+                        $is_valid = true;
+                    }else{
+                        $error['Parameter Error'] = 'Invalid IncomingSMSLog Param';
+                        $this->api_Response['Request_Error'] = $error;
+                        $is_valid = false;
+                        break;
+                    }
+                }
+            }elseif($type == $this->api_Services[16]){
+                foreach($param as $items){
+                    if(isset($items['outgoing_sms_id'])){
+                        $is_valid = true;
+                    }else{
+                        $error['Parameter Error'] = 'Invalid OutgoingSMSLog Param';
+                        $this->api_Response['Request_Error'] = $error;
+                        $is_valid = false;
+                        break;
+                    }
+                }
+            }
+        }else{
+            $error['Parameter Error'] = 'The parameter should be an array';
+            $this->api_Response['Request_Error'] = $error;
         }
+
         return $is_valid;
     }
     public function addUser($data){

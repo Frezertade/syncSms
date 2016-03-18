@@ -11,6 +11,11 @@ namespace SMS_API\Model;
 
 class Hydrator
 {
+    public function __construct()
+    {
+        print_r('Data initialised');
+    }
+
     public function Hydrate($PDO_Posts,$DataType){
         if(is_array($PDO_Posts)){
             if($DataType instanceof IncomingSMS){

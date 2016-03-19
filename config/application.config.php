@@ -10,6 +10,7 @@ return array(
     'modules' => array(
         'Application',
         'Mobile_API',
+        'Sync_SMS',
     ),
 
     // These are various options for the listeners attached to the ModuleManager

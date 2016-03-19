@@ -22,7 +22,7 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'SMS_API\Controller\api' => Controller\smsController::class,
+            'Sync_SMS\Controller\api' => Controller\smsController::class,
         ),
     ),
     'view_manager' => array(

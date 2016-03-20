@@ -21,7 +21,7 @@ class Hydrator
                     $New_Data->setSmsId(isset($data['sms_id'])? ($data['sms_id']):null);
                     $New_Data->setCampaignId(isset($data['campaign_id'])? $data['campaign_id']:null);
                     $New_Data->setSmsFrom(isset($data['sms_from'])? $data['sms_from']:null);
-                    $New_Data->setSmsMsg(isset($data['sms_msg'])? intval($data['sms_msg']):null);
+                    $New_Data->setSmsMsg(isset($data['sms_msg'])? $data['sms_msg']:null);
                     $New_Data->setSmsTo(isset($data['sms_to'])? $data['sms_to']:null);
                     $New_Data->setCreated(isset($data['created'])? $data['created']:null);
                     $Found[] = $New_Data;
@@ -35,7 +35,7 @@ class Hydrator
                     $New_Data->setUserId(isset($data['user_id'])? ($data['user_id']):null);
                     $New_Data->setCampaignId(isset($data['campaign_id'])? $data['campaign_id']:null);
                     $New_Data->setUuid(isset($data['uuid'])? $data['uuid']:null);
-                    $New_Data->setSmsMsg(isset($data['sms_msg'])? intval($data['sms_msg']):null);
+                    $New_Data->setSmsMsg(isset($data['sms_msg'])? $data['sms_msg']:null);
                     $New_Data->setSmsTo(isset($data['sms_to'])? $data['sms_to']:null);
                     $New_Data->setCreated(isset($data['created'])? $data['created']:null);
                     $Found[] = $New_Data;
@@ -61,6 +61,17 @@ class Hydrator
                     $New_Data->setCompanyId(isset($data['company_id'])? ($data['company_id']):null);
                     $New_Data->setName(isset($data['name'])? $data['name']:null);
                     $New_Data->setDescription(isset($data['description'])? $data['description']:null);
+                    $New_Data->setCreated(isset($data['created'])? intval($data['created']):null);
+                    $Found[] = $New_Data;
+                }
+                return $Found;
+            }else if($DataType instanceof Contact){
+                $Found = null;
+                foreach($Post as $data){
+                    $New_Data = new Contact();
+                    $New_Data->setId(isset($data['id'])? intval($data['id']):null);
+                    $New_Data->setFullName(isset($data['full_name'])? ($data['full_name']):null);
+                    $New_Data->setPhone(isset($data['phone_number'])? $data['phone_number']:null);
                     $New_Data->setCreated(isset($data['created'])? intval($data['created']):null);
                     $Found[] = $New_Data;
                 }

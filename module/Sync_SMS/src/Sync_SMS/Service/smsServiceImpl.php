@@ -37,9 +37,9 @@ class smsServiceImpl implements smsService
         $this->smsRepository = $smsRepository;
     }
 
-    public function AddNew_IncomingSMS(Campaign $campaign, IncomingSMS $incomingSMS)
+    public function AddNew_IncomingSMS(IncomingSMS $incomingSMS)
     {
-        // TODO: Implement AddNew_IncomingSMS() method.
+        return $this->smsRepository->AddNew_IncomingSMS($incomingSMS);
     }
 
     public function GetNew_IncomingSMS(Campaign $campaign)
@@ -52,14 +52,19 @@ class smsServiceImpl implements smsService
         // TODO: Implement GetAll_IncomingSMS() method.
     }
 
-    public function Delete_IncomingSMS(Campaign $campaign, IncomingSMS $incomingSMS)
+    public function Delete_IncomingSMS(IncomingSMS $incomingSMS)
     {
         // TODO: Implement Delete_IncomingSMS() method.
     }
 
-    public function AddNew_OutgoingSMS(User $user, Campaign $campaign, OutgoingSMS $outgoingSMS)
+    public function AddNew_OutgoingSMS(OutgoingSMS $outgoingSMS)
     {
         // TODO: Implement AddNew_OutgoingSMS() method.
+    }
+
+    public function GetNew_OutgoingSMS($device_code)
+    {
+        return $this->smsRepository->GetNew_OutgoingSMS($device_code);
     }
 
     public function GetAll_OutgoingSMS(Campaign $campaign)
@@ -67,9 +72,14 @@ class smsServiceImpl implements smsService
         // TODO: Implement GetAll_OutgoingSMS() method.
     }
 
-    public function Delete_OutgoingSMS(Campaign $campaign, OutgoingSMS $outgoingSMS)
+    public function Delete_OutgoingSMS(OutgoingSMS $outgoingSMS)
     {
         // TODO: Implement Delete_OutgoingSMS() method.
+    }
+
+    public function GetCampaigns_by_device_code($device_code)
+    {
+        return $this->smsRepository->GetCampaigns_by_device_code($device_code);
     }
 
 

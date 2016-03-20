@@ -10,9 +10,12 @@ namespace Sync_SMS\Repository;
 
 
 use Sync_SMS\Model\Campaign;
+use Sync_SMS\Model\Company;
 use Sync_SMS\Model\Device;
+use Sync_SMS\Model\Hydrator;
 use Sync_SMS\Model\IncomingSMS;
 use Sync_SMS\Model\OutgoingSMS;
+use Sync_SMS\Model\User;
 use Zend\Db\Adapter\AdapterAwareTrait;
 
 class RepositoryImpl implements RepositoryInterface
@@ -74,6 +77,22 @@ class RepositoryImpl implements RepositoryInterface
         return $result->valid();
     }
 
+    public function GetNew_OutgoingSMS($device_code)
+    {
+        $row_sql = 'SELECT * FROM outgoing_sms WHERE outgoing_sms.campaign_id IN( SELECT campaign.id FROM campaign WHERE campaign.company_id IN(SELECT company_device.company_id FROM company_device WHERE company_device.device_id IN (SELECT devices.id FROM devices WHERE devices.device_code = \''.$device_code.'\')))';
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Hydrate($posts,new OutgoingSMS());
+    }
+
     public function GetAll_OutgoingSMS(Campaign $campaign)
     {
         // TODO: Implement GetAll_OutgoingSMS() method.
@@ -97,7 +116,60 @@ class RepositoryImpl implements RepositoryInterface
             }
         }
         $hydrator = new Hydrator();
-        return $hydrator->Extract($posts,new IncomingSMS());
+        return $hydrator->Hydrate($posts,new Campaign());
+    }
+
+    public function GetCampaigns_by_user(User $user)
+    {
+        $row_sql = 'SELECT * FROM campaign WHERE campaign.company_id IN( SELECT role_linker.company_id FROM role_linker WHERE role_linker.user_id'.$user->getId().')';
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Hydrate($posts,new Campaign());
+    }
+
+    public function GetCampaigns_by_device_code($device_code)
+    {
+        $row_sql = 'SELECT * FROM campaign WHERE campaign.company_id IN( SELECT company_device.company_id FROM company_device WHERE company_device.device_id IN ( SELECT devices.id FROM devices WHERE devices.device_code = \''.$device_code.'\' ))';
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Hydrate($posts,new Campaign());
+    }
+
+    public function GetCompanies(User $user)
+    {
+        $row_sql = 'SELECT * FROM company WHERE company.id IN( SELECT role_linker.company_id FROM role_linker WHERE role_linker.user_id'.$user->getId().' )';
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Hydrate($posts,new Company());
+    }
+
+    public function GetDevice($device_code)
+    {
+        // TODO: Implement GetDevice() method.
     }
 
 

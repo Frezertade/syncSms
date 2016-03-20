@@ -136,7 +136,7 @@ class IncomingSMS
      */
     public function getArray(){
         return array(
-            'id' => $this->getCompanyId(),
+            'id' => $this->getId(),
             'sms_id' => $this->getSmsId(),
             'campaign_id' => $this->getCampaignId(),
             'sms_from' => $this->getSmsFrom(),

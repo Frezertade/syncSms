@@ -96,7 +96,15 @@ class Campaign
     {
         $this->created = $created;
     }
-
+    public function getArray(){
+        return array(
+            'id' => $this->getId(),
+            'company_id' => $this->getCompanyId(),
+            'name' => $this->getName(),
+            'description' => $this->getDescription(),
+            'created' => $this->getCreated(),
+        );
+    }
 
 
 }

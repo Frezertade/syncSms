@@ -19,41 +19,21 @@ interface smsService
     /**
      * IncomingSMS Services
      */
-    /**
-     * @param \Sync_SMS\Model\Campaign $campaign
-     * @param \Sync_SMS\Model\IncomingSMS $incomingSMS
-     * @return mixed
-     */
-    public function AddNew_IncomingSMS(Campaign $campaign,IncomingSMS $incomingSMS);
-
-    /**
-     * @param \Sync_SMS\Model\Campaign $campaign
-     * @return mixed
-     */
+    public function AddNew_IncomingSMS(IncomingSMS $incomingSMS);
     public function GetNew_IncomingSMS(Campaign $campaign);
-    /**
-     * @param \Sync_SMS\Model\Campaign $campaign
-     * @return mixed
-     */
     public function GetAll_IncomingSMS(Campaign $campaign);
-
-    /**
-     * @param \Sync_SMS\Model\Campaign $campaign
-     * @param \Sync_SMS\Model\IncomingSMS $incomingSMS
-     * @return mixed
-     */
-    public function Delete_IncomingSMS(Campaign $campaign,IncomingSMS $incomingSMS);
+    public function Delete_IncomingSMS(IncomingSMS $incomingSMS);
 
     /**
      * OutgoingSMS Services
      */
-    /**
-     * @param User $user
-     * @param \Sync_SMS\Model\Campaign $campaign
-     * @param \Sync_SMS\Model\OutgoingSMS $outgoingSMS
-     * @return mixed
-     */
-    public function AddNew_OutgoingSMS(User $user,Campaign $campaign,OutgoingSMS $outgoingSMS);
+    public function AddNew_OutgoingSMS(OutgoingSMS $outgoingSMS);
     public function GetAll_OutgoingSMS(Campaign $campaign);
-    public function Delete_OutgoingSMS(Campaign $campaign, OutgoingSMS $outgoingSMS);
+    public function GetNew_OutgoingSMS($device_code);
+    public function Delete_OutgoingSMS(OutgoingSMS $outgoingSMS);
+
+    /**
+     * Campaign Services
+     */
+    public function GetCampaigns_by_device_code($device_code);
 }

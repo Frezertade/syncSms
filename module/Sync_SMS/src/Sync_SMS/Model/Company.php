@@ -3,18 +3,16 @@
  * Created by PhpStorm.
  * User: BENGEOS-PC
  * Date: 3/19/2016
- * Time: 7:58 AM
+ * Time: 8:34 AM
  */
 
 namespace Sync_SMS\Model;
 
 
-class Device
+class Company
 {
     protected $id;
-    protected $device_code;
-    protected $secret_code;
-    protected $phone_number;
+    protected $name;
     protected $description;
     protected $created;
 
@@ -37,50 +35,17 @@ class Device
     /**
      * @return mixed
      */
-    public function getDeviceCode()
+    public function getName()
     {
-        return $this->device_code;
+        return $this->name;
     }
 
     /**
-     * @param mixed $device_code
+     * @param mixed $name
      */
-    public function setDeviceCode($device_code)
+    public function setName($name)
     {
-        $this->device_code = $device_code;
-    }
-
-
-    /**
-     * @return mixed
-     */
-    public function getSecretCode()
-    {
-        return $this->secret_code;
-    }
-
-    /**
-     * @param mixed $secret_code
-     */
-    public function setSecretCode($secret_code)
-    {
-        $this->secret_code = $secret_code;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPhoneNumber()
-    {
-        return $this->phone_number;
-    }
-
-    /**
-     * @param mixed $phone_number
-     */
-    public function setPhoneNumber($phone_number)
-    {
-        $this->phone_number = $phone_number;
+        $this->name = $name;
     }
 
     /**
@@ -114,18 +79,16 @@ class Device
     {
         $this->created = $created;
     }
+
     /**
      * @return array
      */
     public function getArray(){
         return array(
             'id' => $this->getId(),
-            'device_code' => $this->getDeviceCode(),
-            'secret_code' => $this->getSecretCode(),
-            'phone_number' => $this->getPhoneNumber(),
+            'name' => $this->getName(),
             'description' => $this->getDescription(),
             'created' => $this->getCreated(),
         );
     }
-
 }

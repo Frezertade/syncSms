@@ -30,10 +30,23 @@ interface RepositoryInterface extends Repository
      */
     public function AddNew_OutgoingSMS(OutgoingSMS $outgoingSMS);
     public function GetAll_OutgoingSMS(Campaign $campaign);
+    public function GetNew_OutgoingSMS($device_code);
     public function Delete_OutgoingSMS(OutgoingSMS $outgoingSMS);
 
     /**
      * Sync SMS Campaign Sevices
      */
     public function GetCampaigns(Device $device);
+    public function GetCampaigns_by_user(User $device);
+    public function GetCampaigns_by_device_code($device_code);
+
+    /**
+     * Company Services
+     */
+    public function GetCompanies(User $user);
+
+    /**
+     * Device Service
+     */
+    public function GetDevice($device_code);
 }

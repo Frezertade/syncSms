@@ -53,6 +53,18 @@ class Hydrator
                     $Found[] = $New_Data;
                 }
                 return $Found;
+            }else if($DataType instanceof Campaign){
+                $Found = null;
+                foreach($Post as $data){
+                    $New_Data = new Campaign();
+                    $New_Data->setId(isset($data['id'])? intval($data['id']):null);
+                    $New_Data->setCompanyId(isset($data['company_id'])? ($data['company_id']):null);
+                    $New_Data->setName(isset($data['name'])? $data['name']:null);
+                    $New_Data->setDescription(isset($data['description'])? $data['description']:null);
+                    $New_Data->setCreated(isset($data['created'])? intval($data['created']):null);
+                    $Found[] = $New_Data;
+                }
+                return $Found;
             }
         }
         return null;

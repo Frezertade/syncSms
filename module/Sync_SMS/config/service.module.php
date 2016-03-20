@@ -12,8 +12,8 @@ return array(
     ),
     'factories'=>array(
         'Sync_SMS\Service\Service' => function(\Zend\ServiceManager\ServiceLocatorInterface $serviceLocator){
-            $smsService = new \Mobile_API\Service\ServiceImpl();
-            $smsService->setRepository($serviceLocator->get('Sync_SMS\Repository\RepositoryInterface'));
+            $smsService = new \Sync_SMS\Service\smsServiceImpl();
+            $smsService->setSmsRepository($serviceLocator->get('Sync_SMS\Repository\RepositoryInterface'));
             return $smsService;
         },
     ),

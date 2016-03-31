@@ -225,6 +225,89 @@ class smsServiceImpl implements smsService
         }
     }
 
+    public function Process_Campaign_Registration($device_code){
+        try{
+            $Incomings = $this->GetAll_IncomingSMS_();
+            if($Incomings != null){
+                /**
+                 * @var \Sync_SMS\Model\IncomingSMS $sms
+                 */
+                foreach($Incomings as $sms){
+                    $msg = $sms->getSmsMsg();
+                    $rex = explode(',',$msg);
+                    print_r($msg);
+                    if(count($rex) == 2){
+                        if(strtolower($rex[0]) == 'reg' && strlen($rex[1])>1){
+                            $contact = new Contact();
+                            $contact->setPhone($sms->getSmsFrom());
+                            $contact->setFullName($rex[1]);
+                            $state = $this->AddNew_Contact($contact);
+                            if($state){
+                                // if the contact is newly registered
+                                $_Contact = $this->Get_Contact($contact->getPhone());
+                                if($_Contact != null){
+                                    /**
+                                     * @var \Sync_SMS\Model\Contact $_contact_
+                                     */
+                                    foreach($_Contact as $_contact_){
+                                        $Campaigns = $this->GetCampaigns_by_device_code($device_code);
+                                        if($Campaigns != null){
+                                            /**
+                                             * @var \Sync_SMS\Model\Campaign $_campaign_
+                                             */
+                                            foreach($Campaigns as $_campaign_){
+                                                $state = $this->AddNew_CampaignContact($_contact_,$_campaign_);
+                                                if($state){
+                                                    $new_outgoing = new OutgoingSMS();
+                                                    $new_outgoing->setCampaignId($_campaign_->getId());
+                                                    $new_outgoing->setUserId(1);
+                                                    $new_outgoing->setSmsTo($_contact_->getPhone());
+                                                    $new_outgoing->setSmsMsg("Hello ".$_contact_->getFullName()." Now you have successfully registered to ".$_campaign_->getName()." campaign");
+                                                    $new_outgoing->setUuid($sms->getSmsId());
+                                                    $this->AddNew_OutgoingSMS($new_outgoing);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }else{
+                                // if the contact is already registered
+                                $_Contact = $this->Get_Contact($contact->getPhone());
+                                if($_Contact != null){
+                                    /**
+                                     * @var \Sync_SMS\Model\Contact $_contact_
+                                     */
+                                    foreach($_Contact as $_contact_){
+                                        $Campaigns = $this->GetCampaigns_by_device_code($device_code);
+
+                                        if($Campaigns != null){
+                                            /**
+                                             * @var \Sync_SMS\Model\Campaign $_campaign_
+                                             */
+                                            foreach($Campaigns as $_campaign_){
+
+                                                $new_outgoing = new OutgoingSMS();
+                                                $new_outgoing->setCampaignId($_campaign_->getId());
+                                                $new_outgoing->setUserId(1);
+                                                $new_outgoing->setSmsTo($_contact_->getPhone());
+                                                $new_outgoing->setSmsMsg("Hello ".$_contact_->getFullName()." Now you are already registered to ".$_campaign_->getName()." campaign");
+                                                $new_outgoing->setUuid($_contact_->getId());
+                                                $this->AddNew_OutgoingSMS($new_outgoing);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }catch(\Exception $e){
+            return null;
+        }
+    }
+
     public function AddNew_CampaignContact(Contact $contact, Campaign $campaign)
     {
         try{

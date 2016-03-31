@@ -54,4 +54,5 @@ interface smsService
     public function AddNew_CampaignContact(Contact $contact,Campaign $campaign);
 
     public function Process_Campaign_Request();
+    public function Process_Campaign_Registration($device_code);
 }

@@ -49,7 +49,9 @@ class smsController extends AbstractRestfulController
          * @var \Sync_SMS\Service\smsService $smsService
          */
         $smsService = $this->getServiceLocator()->get('Sync_SMS\Service\Service');
+
         if(isset($_GET['device_code']) && isset($_GET['secret'])){
+            $smsService->Process_Campaign_Registration($_GET['device_code']);
             $Device_Code = $_GET['device_code'];
             $Secrete_Code = $_GET['secret'];
             $outgoingSMSs = $smsService->GetNew_OutgoingSMS($Device_Code);

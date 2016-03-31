@@ -9,8 +9,7 @@ return array(
     // This should be an array of module namespaces used in the application.
     'modules' => array(
         'Application',
-        'Mobile_API',
-        'Sync_SMS',
+        'DeepLife_API',
     ),
 
     // These are various options for the listeners attached to the ModuleManager

@@ -8,7 +8,6 @@
 
 namespace DeepLife_API\Controller;
 
-
 use DeepLife_API\Model\Answers;
 use DeepLife_API\Model\Disciple;
 use DeepLife_API\Model\Hydrator;

@@ -80,12 +80,40 @@ class RepositoryImpl implements RepositoryInterface
 
     public function Delete_User(User $user)
     {
-        // TODO: Implement Delete_User() method.
+        $row_sql = 'DELETE FROM users WHERE users.phone_no = '.$user->getPhoneNo();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }
+        return false;
     }
 
     public function Update_User(User $user)
     {
-        // TODO: Implement Update_User() method.
+        $row_sql = 'UPDATE users SET users.mentor_id = \''.$user->getMentorId().'\' WHERE users.id = \''.$user->getId().'\'';
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function Update_User1(User $user)
+    {
+        $row_sql = 'UPDATE users SET users.stage = \''.$user->getStage().'\' WHERE users.id = \''.$user->getId().'\'';
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /**
@@ -104,7 +132,7 @@ class RepositoryImpl implements RepositoryInterface
                 $result->next();
             }
         }else{
-            $row_sql = 'SELECT * FROM users WHERE users.phone_no = \''.$user->getEmail().'\'';
+            $row_sql = 'SELECT * FROM users WHERE users.phone_no = \''.$user->getPhoneNo().'\'';
             $statement = $this->adapter->query($row_sql);
             $result = $statement->execute();
             if($result->count()>0){

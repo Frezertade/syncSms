@@ -114,12 +114,32 @@ class ServiceImpl implements Service
 
     public function Delete_User(User $user)
     {
-        // TODO: Implement Delete_User() method.
+        try{
+            return $this->apiRepository->Delete_User($user);
+        }catch(\Exception $e){
+            $this->LogError($e);
+            return null;
+        }
     }
 
     public function Update_User(User $user)
     {
-        // TODO: Implement Update_User() method.
+        try{
+            return $this->apiRepository->Update_User($user);
+        }catch(\Exception $e){
+            $this->LogError($e);
+            return null;
+        }
+    }
+
+    public function Update_User1(User $user)
+    {
+        try{
+            return $this->apiRepository->Update_User1($user);
+        }catch(\Exception $e){
+            $this->LogError($e);
+            return null;
+        }
     }
 
     /**

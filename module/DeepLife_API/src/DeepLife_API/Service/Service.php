@@ -21,6 +21,7 @@ interface Service
     public function AddNew_User(User $user);
     public function Delete_User(User $user);
     public function Update_User(User $user);
+    public function Update_User1(User $user);
     public function isThere_User(User $user);
 
     public function Get_User(User $user);

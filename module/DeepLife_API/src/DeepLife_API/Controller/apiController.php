@@ -13,6 +13,7 @@ use DeepLife_API\Model\Disciple;
 use DeepLife_API\Model\Hydrator;
 use DeepLife_API\Model\Schedule;
 use DeepLife_API\Model\User;
+use DeepLife_API\Model\User_Role;
 use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 
@@ -23,7 +24,7 @@ class apiController extends AbstractRestfulController
         'GetAll_Disciples','GetNew_Disciples','AddNew_Disciples','AddNew_Disciples_Log','Delete_All_Disciple_Log',
         'GetAll_Schedules','GetNew_Schedules','AddNew_Schedules','AddNew_Schedule_Log','Delete_All_Schedule_Log',
         'IsValid_User','CreateUser','GetAll_Questions','GetAll_Answers','AddNew_Answers','Send_Log','Log_In','Sign_Up',
-        'Update_Disciples',
+        'Update_Disciples','Update',
         );
     protected $api_Param;
     protected $api_Service;
@@ -111,11 +112,20 @@ class apiController extends AbstractRestfulController
                 if(!$smsService->isThere_User($new_user)){
                     $state = $smsService->AddNew_User($new_user);
                     if($state){
+
                         $this->api_user = $new_user;
                         $found['Disciples'] = $smsService->GetAll_Disciples($this->api_user);
                         $found['Schedules'] = $smsService->GetAll_Schedule($this->api_user);
                         $found['Questions'] = $smsService->GetAll_Question();
+                        $found['Reports'] = $smsService->GetAll_Report();
                         $this->api_Response['Response'] = $found;
+                        /**
+                         * @var \DeepLife_API\Model\User $added_user
+                         */
+                        $added_user = $smsService->Get_User($new_user);
+                        if($added_user != null){
+                            $smsService->Add_User_Role($added_user->getId(),2);
+                        }
                     }else{
                         $error['Parameter Error'] = 'User Could not be Registered now. Please Try again later';
                         $this->api_Response['Request_Error'] = $error;
@@ -128,9 +138,17 @@ class apiController extends AbstractRestfulController
                         if($state){
                             $state = $smsService->AddNew_User($this->api_user);
                             if($state){
+                                /**
+                                 * @var \DeepLife_API\Model\User $added_user
+                                 */
+                                $added_user = $smsService->Get_User($this->api_user);
+                                if($added_user != null){
+                                    $smsService->Add_User_Role($added_user->getId(),2);
+                                }
                                 $found['Disciples'] = $smsService->GetAll_Disciples($this->api_user);
                                 $found['Schedules'] = $smsService->GetAll_Schedule($this->api_user);
                                 $found['Questions'] = $smsService->GetAll_Question();
+                                $found['Reports'] = $smsService->GetAll_Report();
                                 $this->api_Response['Response'] = $found;
                             }else{
                                 $error['Parameter Error'] = 'Something went wrong try again!';
@@ -204,7 +222,7 @@ class apiController extends AbstractRestfulController
         }elseif($service == $this->api_Services[5]){
             $this->api_Response['Response'] = array('Schedules',$smsService->GetAll_Schedule($this->api_user));
         }elseif($service == $this->api_Services[6]){
-            $this->api_Response['Response'] = $smsService->GetNew_Schedule($this->api_user);
+            $this->api_Response['Response'] = array('Schedules',$smsService->GetNew_Schedule($this->api_user));
         }elseif($service == $this->api_Services[7]){
            //Add new Schedule
             $res['Log_Response'] = array();
@@ -216,9 +234,10 @@ class apiController extends AbstractRestfulController
                 $sch->setTime($data['Alarm_Time']);
                 $sch->setType($data['Alarm_Repeat']);
                 $sch->setDisciplePhone($data['Disciple_Phone']);
+                $sch->setDescription($data['Description']);
                 $state = $smsService->AddNew_Schedule($sch);
                 if($state){
-                    $disciple_res['Log_ID'] = $data['id'];
+                    $disciple_res['Log_ID'] = $data['ID'];
                     $res['Log_Response'][] = $disciple_res;
                 }
             }
@@ -291,6 +310,14 @@ class apiController extends AbstractRestfulController
                             $res['Log_Response'][] = $disciple_res;
                         }
                     }
+                }else if($data['Type'] == "Remove_Schedule"){
+                    $schedule = new Schedule();
+                    $schedule->setDisciplePhone($data['Value']);
+                    $state = $smsService->Delete_Schedule($schedule);
+                    if($state){
+                        $disciple_res['Log_ID'] = $data['id'];
+                        $res['Log_Response'][] = $disciple_res;
+                    }
                 }
             }
             $this->api_Response['Response'] = $res;
@@ -301,6 +328,7 @@ class apiController extends AbstractRestfulController
             $found['Disciples'] = $smsService->GetAll_Disciples($this->api_user);
             $found['Schedules'] = $smsService->GetAll_Schedule($this->api_user);
             $found['Questions'] = $smsService->GetAll_Question();
+            $found['Reports'] = $smsService->GetAll_Report();
             $this->api_Response['Response'] = $found;
         }elseif($service == $this->api_Services[17]) {
             /// Sign up
@@ -309,6 +337,7 @@ class apiController extends AbstractRestfulController
             $found['Disciples'] = $smsService->GetAll_Disciples($this->api_user);
             $found['Schedules'] = $smsService->GetAll_Schedule($this->api_user);
             $found['Questions'] = $smsService->GetAll_Question();
+            $found['Reports'] = $smsService->GetAll_Report();
             $this->api_Response['Response'] = $found;
         }elseif($service == $this->api_Services[18]) {
             /// Update_Disciples
@@ -328,6 +357,12 @@ class apiController extends AbstractRestfulController
                 }
             }
             $this->api_Response['Response'] = $res;
+        }elseif($service == $this->api_Services[19]){
+            $found['Disciples'] = $smsService->GetNew_Disciples($this->api_user);
+            $found['Schedules'] = $smsService->GetNew_Schedule($this->api_user);
+            $found['Questions'] = $smsService->GetAll_Question();
+            $found['Reports'] = $smsService->GetAll_Report();
+            $this->api_Response['Response'] = $found;
         }
     }
     public function isValidRequest($api_request){

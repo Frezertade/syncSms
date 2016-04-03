@@ -14,6 +14,7 @@ use DeepLife_API\Model\Disciple;
 use DeepLife_API\Model\Questions;
 use DeepLife_API\Model\Schedule;
 use DeepLife_API\Model\User;
+use DeepLife_API\Model\User_Role;
 use Zend\Authentication\AuthenticationService;
 
 class ServiceImpl implements Service
@@ -106,6 +107,16 @@ class ServiceImpl implements Service
     {
         try{
             return $this->apiRepository->AddNew_User($user);
+        }catch(\Exception $e){
+            $this->LogError($e);
+            return null;
+        }
+    }
+
+    public function Add_User_Role($user_id, $role_id)
+    {
+        try{
+            return $this->apiRepository->Add_User_Role($user_id,$role_id);
         }catch(\Exception $e){
             $this->LogError($e);
             return null;
@@ -345,6 +356,21 @@ class ServiceImpl implements Service
         }catch(\Exception $e){
             $this->LogError($e);
             return null;
+        }
+    }
+
+    public function AddNew_Report(User $user)
+    {
+        // TODO: Implement AddNew_Report() method.
+    }
+
+    public function GetAll_Report()
+    {
+        try{
+            return $this->apiRepository->GetAll_Report();
+        }catch(\Exception $e){
+            $this->LogError($e);
+            return array();
         }
     }
 

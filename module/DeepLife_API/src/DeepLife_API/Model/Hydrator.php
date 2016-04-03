@@ -150,7 +150,7 @@ class Hydrator
                 foreach($Post as $data){
                     $New_Data = new Report();
                     $New_Data->setId(isset($data['id'])? intval($data['id']):null);
-                    $New_Data->setCategory(isset($data['category'])? ($data['category']):null);
+                    $New_Data->setCategory(isset($data['category_id'])? ($data['category_id']):null);
                     $New_Data->setQuestion(isset($data['question'])? $data['question']:null);
                     $New_Data->setCreated(isset($data['created'])? $data['created']:null);
                     $Found[] = $New_Data->getArray();

@@ -14,11 +14,13 @@ use DeepLife_API\Model\Disciple;
 use DeepLife_API\Model\Questions;
 use DeepLife_API\Model\Schedule;
 use DeepLife_API\Model\User;
+use DeepLife_API\Model\User_Role;
 
 interface RepositoryInterface extends Repository
 {
     // Users Table Services
     public function AddNew_User(User $user);
+    public function Add_User_Role($user_id, $role_id);
     public function Delete_User(User $user);
     public function Update_User(User $user);
     public function Update_User1(User $user);

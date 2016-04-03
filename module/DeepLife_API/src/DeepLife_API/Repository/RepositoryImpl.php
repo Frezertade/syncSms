@@ -16,6 +16,7 @@ use DeepLife_API\Model\Questions;
 use DeepLife_API\Model\Report;
 use DeepLife_API\Model\Schedule;
 use DeepLife_API\Model\User;
+use DeepLife_API\Model\User_Role;
 use Zend\Crypt\Password\Bcrypt;
 use Zend\Db\Adapter\AdapterAwareTrait;
 
@@ -146,6 +147,23 @@ class RepositoryImpl implements RepositoryInterface
         return $hydrator->Get_Data($posts,new User());
     }
 
+    public function Add_User_Role($user_id, $role_id)
+    {
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $insert = $sql->insert()
+            ->values(array(
+                'user_id'=>$user_id,
+                'role_id'=>$role_id,
+            ))
+            ->into('user_role_linker');
+        $statement = $sql->prepareStatementForSqlObject($insert);
+        $result = $statement->execute();
+        return $result->valid();
+    }
+
     public function GetAll_Disciples(User $user)
     {
         $row_sql = 'SELECT * FROM users WHERE users.mentor_id = \''.$user->getId().'\'';
@@ -207,7 +225,14 @@ class RepositoryImpl implements RepositoryInterface
 
     public function Delete_Schedule(Schedule $schedule)
     {
-        // TODO: Implement Delete_Schedule() method.
+        $row_sql = 'DELETE FROM schedule WHERE schedule.disciple_phone = '.$schedule->getDisciplePhone();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }
+        return false;
     }
 
     public function AddNew_Schedule(Schedule $schedule)
@@ -219,9 +244,11 @@ class RepositoryImpl implements RepositoryInterface
         $insert = $sql->insert()
             ->values(array(
                 'user_id'=>$schedule->getUserId(),
+                'disciple_phone'=>$schedule->getDisciplePhone(),
                 'name'=>$schedule->getName(),
                 'time'=>$schedule->getTime(),
                 'type'=>$schedule->getType(),
+                'description'=>$schedule->getDescription(),
             ))
             ->into('schedule');
         $statement = $sql->prepareStatementForSqlObject($insert);
@@ -414,7 +441,7 @@ class RepositoryImpl implements RepositoryInterface
             }
         }
         $hydrator = new Hydrator();
-        return $hydrator->Hydrate($posts,new Report());
+        return $hydrator->Extract($posts,new Report());
     }
 
 

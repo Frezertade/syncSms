@@ -305,19 +305,15 @@ class apiController extends AbstractRestfulController
                     if($_new_user != null){
                         $_new_user->setMentorId("NULL");
                         $state = $smsService->Update_User($_new_user);
-                        if($state){
-                            $disciple_res['Log_ID'] = $data['id'];
-                            $res['Log_Response'][] = $disciple_res;
-                        }
+                        $disciple_res['Log_ID'] = $data['id'];
+                        $res['Log_Response'][] = $disciple_res;
                     }
                 }else if($data['Type'] == "Remove_Schedule"){
                     $schedule = new Schedule();
                     $schedule->setDisciplePhone($data['Value']);
                     $state = $smsService->Delete_Schedule($schedule);
-                    if($state){
-                        $disciple_res['Log_ID'] = $data['id'];
-                        $res['Log_Response'][] = $disciple_res;
-                    }
+                    $disciple_res['Log_ID'] = $data['id'];
+                    $res['Log_Response'][] = $disciple_res;
                 }
             }
             $this->api_Response['Response'] = $res;

@@ -11,3 +11,4 @@ vendor
 composer.phar
 Error.txt
 Error_Logger.txt
+module/global.php

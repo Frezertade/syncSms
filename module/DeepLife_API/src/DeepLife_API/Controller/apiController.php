@@ -206,17 +206,25 @@ class apiController extends AbstractRestfulController
         }elseif($service == $this->api_Services[6]){
             $this->api_Response['Response'] = $smsService->GetNew_Schedule($this->api_user);
         }elseif($service == $this->api_Services[7]){
+           //Add new Schedule
+            $res['Log_Response'] = array();
             $state = null;
             foreach($this->api_Param as $data){
                 $sch = new Schedule();
                 $sch->setUserId($this->api_user->getId());
-                $sch->setName($data['name']);
-                $sch->setTime($data['time']);
-                $sch->setType($data['type']);
-                $state[] = $smsService->AddNew_Schedule($sch);
+                $sch->setName($data['Title']);
+                $sch->setTime($data['Alarm_Time']);
+                $sch->setType($data['Alarm_Repeat']);
+                $sch->setDisciplePhone($data['Disciple_Phone']);
+                $state = $smsService->AddNew_Schedule($sch);
+                if($state){
+                    $disciple_res['Log_ID'] = $data['id'];
+                    $res['Log_Response'][] = $disciple_res;
+                }
             }
-            $this->api_Response['Response'] = $state;
+            $this->api_Response['Response'] = $res;
         }elseif($service == $this->api_Services[8]){
+           // Add Schedule Log
             $state = null;
             foreach($this->api_Param as $data){
                 $sch = new Schedule();
@@ -368,7 +376,7 @@ class apiController extends AbstractRestfulController
                 }
             }elseif($type == $this->api_Services[7]){
                 foreach($param as $items){
-                    if(isset($items['name']) && isset($items['time']) && isset($items['type']) ){
+                    if(isset($items['Alarm_Repeat']) && isset($items['Alarm_Time']) && isset($items['Disciple_Phone']) && isset($items['Disciple_Phone']) ){
                         $is_valid = true;
                     }else{
                         $error['Parameter Error'] = 'Invalid Disciple id for logging';

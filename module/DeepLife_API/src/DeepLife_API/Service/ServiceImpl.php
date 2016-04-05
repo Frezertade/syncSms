@@ -15,6 +15,7 @@ use DeepLife_API\Model\Questions;
 use DeepLife_API\Model\Schedule;
 use DeepLife_API\Model\User;
 use DeepLife_API\Model\User_Role;
+use DeepLife_API\Model\UserReport;
 use Zend\Authentication\AuthenticationService;
 
 class ServiceImpl implements Service
@@ -368,6 +369,26 @@ class ServiceImpl implements Service
     {
         try{
             return $this->apiRepository->GetAll_Report();
+        }catch(\Exception $e){
+            $this->LogError($e);
+            return array();
+        }
+    }
+
+    public function GetAll_Country()
+    {
+        try{
+            return $this->apiRepository->GetAll_Country();
+        }catch(\Exception $e){
+            $this->LogError($e);
+            return array();
+        }
+    }
+
+    public function AddNew_UserReport(UserReport $userReport)
+    {
+        try{
+            return $this->apiRepository->AddNew_UserReport($userReport);
         }catch(\Exception $e){
             $this->LogError($e);
             return array();

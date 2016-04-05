@@ -15,6 +15,7 @@ use DeepLife_API\Model\Questions;
 use DeepLife_API\Model\Schedule;
 use DeepLife_API\Model\User;
 use DeepLife_API\Model\User_Role;
+use DeepLife_API\Model\UserReport;
 
 interface RepositoryInterface extends Repository
 {
@@ -56,4 +57,8 @@ interface RepositoryInterface extends Repository
 
     public function AddNew_Report(User $user);
     public function GetAll_Report();
+
+    public function GetAll_Country();
+
+    public function AddNew_UserReport(UserReport $userReport);
 }

@@ -14,6 +14,7 @@ use DeepLife_API\Model\Hydrator;
 use DeepLife_API\Model\Schedule;
 use DeepLife_API\Model\User;
 use DeepLife_API\Model\User_Role;
+use DeepLife_API\Model\UserReport;
 use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 
@@ -24,7 +25,7 @@ class apiController extends AbstractRestfulController
         'GetAll_Disciples','GetNew_Disciples','AddNew_Disciples','AddNew_Disciples_Log','Delete_All_Disciple_Log',
         'GetAll_Schedules','GetNew_Schedules','AddNew_Schedules','AddNew_Schedule_Log','Delete_All_Schedule_Log',
         'IsValid_User','CreateUser','GetAll_Questions','GetAll_Answers','AddNew_Answers','Send_Log','Log_In','Sign_Up',
-        'Update_Disciples','Update',
+        'Update_Disciples','Update','Country','Send_Report'
         );
     protected $api_Param;
     protected $api_Service;
@@ -46,7 +47,9 @@ class apiController extends AbstractRestfulController
             $_user = new User();
             $_user->setPhoneNo($data['User_Name']);
             $this->api_user = $smsService->Get_User($_user);
-            return true;
+            if($this->api_user->getCountry() == $data['Country']){
+                return true;
+            }
         }
         $error['Authentication'] = 'Invalid User';
         $this->api_Response['Request_Error'] = $error;
@@ -70,6 +73,14 @@ class apiController extends AbstractRestfulController
                         if($this->Authenticate($data)){
                             $this->ProcessRequest($data['Service'],$data['Param']);
                         }
+                    }
+                    if($data['Service'] == 'Country'){
+                        /**
+                         * @var \DeepLife_API\Service\Service $smsService
+                         */
+                        $smsService = $this->getServiceLocator()->get('DeepLife_API\Service\Service');
+                        $found['Country'] = $smsService->GetAll_Country();
+                        $this->api_Response['Response'] = $found;
                     }
 
                 }
@@ -112,7 +123,6 @@ class apiController extends AbstractRestfulController
                 if(!$smsService->isThere_User($new_user)){
                     $state = $smsService->AddNew_User($new_user);
                     if($state){
-
                         $this->api_user = $new_user;
                         $found['Disciples'] = $smsService->GetAll_Disciples($this->api_user);
                         $found['Schedules'] = $smsService->GetAll_Schedule($this->api_user);
@@ -297,7 +307,7 @@ class apiController extends AbstractRestfulController
                     }
                 }else if($data['Type'] == "Remove_Disciple"){
                     $user1 = new User();
-                    $user1->setEmail($data['Value']);
+                    $user1->setPhoneNo($data['Value']);
                     /**
                      * @var \DeepLife_API\Model\User $_new_user
                      */
@@ -354,16 +364,30 @@ class apiController extends AbstractRestfulController
             }
             $this->api_Response['Response'] = $res;
         }elseif($service == $this->api_Services[19]){
+            // Update
             $found['Disciples'] = $smsService->GetNew_Disciples($this->api_user);
             $found['Schedules'] = $smsService->GetNew_Schedule($this->api_user);
-            $found['Questions'] = $smsService->GetAll_Question();
-            $found['Reports'] = $smsService->GetAll_Report();
             $this->api_Response['Response'] = $found;
+        }elseif($service == $this->api_Services[21]){
+            // send report
+            $res['Log_Response'] = array();
+            foreach($this->api_Param as $data){
+                $new_user_report = new UserReport();
+                $new_user_report->setUserId($this->api_user->getId());
+                $new_user_report->setReportId($data['Report_ID']);
+                $new_user_report->setValue($data['Value']);
+                $state = $smsService->AddNew_UserReport($new_user_report);
+                if($state){
+                    $disciple_res['Log_ID'] = $data['id'];
+                    $res['Log_Response'][] = $disciple_res;
+                }
+            }
+            $this->api_Response['Response'] = $res;
         }
     }
     public function isValidRequest($api_request){
         $this->api_Response['Request_Error'] = array();
-        if(isset($api_request['User_Name']) && isset($api_request['User_Pass'])
+        if(isset($api_request['User_Name']) && isset($api_request['User_Pass']) && isset($api_request['Country'])
             && isset($api_request['Service']) && isset($api_request['Param'])
         ){
             if(in_array($api_request['Service'],$this->api_Services)){

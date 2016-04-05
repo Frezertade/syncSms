@@ -10,6 +10,7 @@ namespace DeepLife_API\Repository;
 
 
 use DeepLife_API\Model\Answers;
+use DeepLife_API\Model\Country;
 use DeepLife_API\Model\Disciple;
 use DeepLife_API\Model\Hydrator;
 use DeepLife_API\Model\Questions;
@@ -17,6 +18,7 @@ use DeepLife_API\Model\Report;
 use DeepLife_API\Model\Schedule;
 use DeepLife_API\Model\User;
 use DeepLife_API\Model\User_Role;
+use DeepLife_API\Model\UserReport;
 use Zend\Crypt\Password\Bcrypt;
 use Zend\Db\Adapter\AdapterAwareTrait;
 
@@ -442,6 +444,40 @@ class RepositoryImpl implements RepositoryInterface
         }
         $hydrator = new Hydrator();
         return $hydrator->Extract($posts,new Report());
+    }
+
+    public function GetAll_Country()
+    {
+        $row_sql = 'SELECT * FROM country';
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Extract($posts,new Country());
+    }
+
+    public function AddNew_UserReport(UserReport $userReport)
+    {
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $insert = $sql->insert()
+            ->values(array(
+                'user_id'=>$userReport->getUserId(),
+                'report_form_id'=>$userReport->getReportId(),
+                'value'=>$userReport->getValue(),
+            ))
+            ->into('reports');
+        $statement = $sql->prepareStatementForSqlObject($insert);
+        $result = $statement->execute();
+        return $result->valid();
     }
 
 

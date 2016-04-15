@@ -7,9 +7,6 @@
  */
 
 namespace DeepLife_API\Model;
-
-
-
 class Hydrator
 {
     public function Hydrate($Post,$DataType){
@@ -77,6 +74,22 @@ class Hydrator
                     $New_Data->setId(isset($data['id'])? intval($data['id']):null);
                     $New_Data->setCategory(isset($data['category'])? ($data['category']):null);
                     $New_Data->setQuestion(isset($data['question'])? $data['question']:null);
+                    $New_Data->setCreated(isset($data['created'])? $data['created']:null);
+                    $Found[] = $New_Data;
+                }
+                return $Found;
+            }elseif ($DataType instanceof NewsFeed) {
+                $Found = null;
+                foreach($Post as $data){
+                    $New_Data = new NewsFeed();
+                    $New_Data->setId(isset($data['id'])? intval($data['id']):null);
+                    $New_Data->setNewsId(isset($data['news_id'])? ($data['news_id']):null);
+                    $New_Data->setUserId(isset($data['user_id'])? $data['user_id']:null);
+                    $New_Data->setCountryId(isset($data['country_id'])? $data['country_id']:null);
+                    $New_Data->setTitle(isset($data['title'])? $data['title']:null);
+                    $New_Data->setContent(isset($data['content'])? $data['content']:null);
+                    $New_Data->setImageUrl(isset($data['image_url'])? $data['image_url']:null);
+                    $New_Data->setPublishDate(isset($data['published_date'])? $data['published_date']:null);
                     $New_Data->setCreated(isset($data['created'])? $data['created']:null);
                     $Found[] = $New_Data;
                 }
@@ -164,6 +177,22 @@ class Hydrator
                     $New_Data->setIso3(isset($data['iso3'])? ($data['iso3']):null);
                     $New_Data->setName(isset($data['name'])? $data['name']:null);
                     $New_Data->setCode(isset($data['phonecode'])? $data['phonecode']:null);
+                    $Found[] = $New_Data->getArray();
+                }
+                return $Found;
+            }elseif ($DataType instanceof NewsFeed) {
+                $Found = null;
+                foreach($Post as $data){
+                    $New_Data = new NewsFeed();
+                    $New_Data->setId(isset($data['id'])? intval($data['id']):null);
+                    $New_Data->setNewsId(isset($data['news_id'])? ($data['news_id']):null);
+                    $New_Data->setUserId(isset($data['user_id'])? $data['user_id']:null);
+                    $New_Data->setCountryId(isset($data['country_id'])? $data['country_id']:null);
+                    $New_Data->setTitle(isset($data['title'])? $data['title']:null);
+                    $New_Data->setContent(isset($data['content'])? $data['content']:null);
+                    $New_Data->setImageUrl(isset($data['image_url'])? $data['image_url']:null);
+                    $New_Data->setPublishDate(isset($data['published_date'])? $data['published_date']:null);
+                    $New_Data->setCreated(isset($data['created'])? $data['created']:null);
                     $Found[] = $New_Data->getArray();
                 }
                 return $Found;

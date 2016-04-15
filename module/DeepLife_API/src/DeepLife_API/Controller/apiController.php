@@ -25,7 +25,7 @@ class apiController extends AbstractRestfulController
         'GetAll_Disciples','GetNew_Disciples','AddNew_Disciples','AddNew_Disciples_Log','Delete_All_Disciple_Log',
         'GetAll_Schedules','GetNew_Schedules','AddNew_Schedules','AddNew_Schedule_Log','Delete_All_Schedule_Log',
         'IsValid_User','CreateUser','GetAll_Questions','GetAll_Answers','AddNew_Answers','Send_Log','Log_In','Sign_Up',
-        'Update_Disciples','Update','Country','Send_Report'
+        'Update_Disciples','Update','Meta_Data','Send_Report'
         );
     protected $api_Param;
     protected $api_Service;
@@ -74,7 +74,7 @@ class apiController extends AbstractRestfulController
                             $this->ProcessRequest($data['Service'],$data['Param']);
                         }
                     }
-                    if($data['Service'] == 'Country'){
+                    if($data['Service'] == 'Meta_Data'){
                         /**
                          * @var \DeepLife_API\Service\Service $smsService
                          */
@@ -367,6 +367,8 @@ class apiController extends AbstractRestfulController
             // Update
             $found['Disciples'] = $smsService->GetNew_Disciples($this->api_user);
             $found['Schedules'] = $smsService->GetNew_Schedule($this->api_user);
+            $found['Questions'] = $smsService->GetAll_Question();
+            $found['Reports'] = $smsService->GetAll_Report();
             $this->api_Response['Response'] = $found;
         }elseif($service == $this->api_Services[21]){
             // send report

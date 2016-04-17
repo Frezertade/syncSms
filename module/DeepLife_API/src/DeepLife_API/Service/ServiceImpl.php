@@ -11,6 +11,7 @@ namespace DeepLife_API\Service;
 
 use DeepLife_API\Model\Answers;
 use DeepLife_API\Model\Disciple;
+use DeepLife_API\Model\NewsFeed;
 use DeepLife_API\Model\Questions;
 use DeepLife_API\Model\Schedule;
 use DeepLife_API\Model\User;
@@ -389,6 +390,46 @@ class ServiceImpl implements Service
     {
         try{
             return $this->apiRepository->AddNew_UserReport($userReport);
+        }catch(\Exception $e){
+            $this->LogError($e);
+            return array();
+        }
+    }
+
+    public function GetAll_NewsFeeds()
+    {
+        try{
+            return $this->apiRepository->GetAll_NewsFeeds();
+        }catch(\Exception $e){
+            $this->LogError($e);
+            return array();
+        }
+    }
+
+    public function GetNew_NewsFeeds(User $user)
+    {
+        try{
+            return $this->apiRepository->GetNew_NewsFeeds($user);
+        }catch(\Exception $e){
+            $this->LogError($e);
+            return array();
+        }
+    }
+
+    public function AddNew_NewsFeed_log(NewsFeed $news)
+    {
+        try{
+            return $this->apiRepository->AddNew_NewsFeed_log($news);
+        }catch(\Exception $e){
+            $this->LogError($e);
+            return array();
+        }
+    }
+
+    public function Delete_All_NewsFeed_Log(User $user)
+    {
+        try{
+            return $this->apiRepository->Delete_All_NewsFeed_Log($user);
         }catch(\Exception $e){
             $this->LogError($e);
             return array();

@@ -83,7 +83,7 @@ class Hydrator
                 foreach($Post as $data){
                     $New_Data = new NewsFeed();
                     $New_Data->setId(isset($data['id'])? intval($data['id']):null);
-                    $New_Data->setNewsId(isset($data['news_id'])? ($data['news_id']):null);
+                    $New_Data->setCategory(isset($data['category'])? ($data['category']):null);
                     $New_Data->setUserId(isset($data['user_id'])? $data['user_id']:null);
                     $New_Data->setCountryId(isset($data['country_id'])? $data['country_id']:null);
                     $New_Data->setTitle(isset($data['title'])? $data['title']:null);
@@ -185,8 +185,7 @@ class Hydrator
                 foreach($Post as $data){
                     $New_Data = new NewsFeed();
                     $New_Data->setId(isset($data['id'])? intval($data['id']):null);
-                    $New_Data->setNewsId(isset($data['news_id'])? ($data['news_id']):null);
-                    $New_Data->setUserId(isset($data['user_id'])? $data['user_id']:null);
+                    $New_Data->setCategory(isset($data['category'])? ($data['category']):null);
                     $New_Data->setCountryId(isset($data['country_id'])? $data['country_id']:null);
                     $New_Data->setTitle(isset($data['title'])? $data['title']:null);
                     $New_Data->setContent(isset($data['content'])? $data['content']:null);

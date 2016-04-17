@@ -13,7 +13,7 @@ class NewsFeed
 {
     protected $id;
     protected $user_id;
-    protected $news_id;
+    protected $category;
     protected $country_id;
     protected $title;
     protected $content;
@@ -56,18 +56,19 @@ class NewsFeed
     /**
      * @return mixed
      */
-    public function getNewsId()
+    public function getCategory()
     {
-        return $this->news_id;
+        return $this->category;
     }
 
     /**
-     * @param mixed $news_id
+     * @param mixed $category
      */
-    public function setNewsId($news_id)
+    public function setCategory($category)
     {
-        $this->news_id = $news_id;
+        $this->category = $category;
     }
+
 
     /**
      * @return mixed
@@ -168,9 +169,9 @@ class NewsFeed
     public function getArray(){
         return array(
             'id' => $this->getId(),
-            'news_id' => $this->getUserId(),
             'user_id' => $this->getUserId(),
             'country_id' => $this->getCountryId(),
+            'category' => $this->getCategory(),
             'title' => $this->getTitle(),
             'content' => $this->getContent(),
             'image_url' => $this->getImageUrl(),

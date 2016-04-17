@@ -11,6 +11,7 @@ namespace DeepLife_API\Service;
 
 use DeepLife_API\Model\Answers;
 use DeepLife_API\Model\Disciple;
+use DeepLife_API\Model\NewsFeed;
 use DeepLife_API\Model\Questions;
 use DeepLife_API\Model\Schedule;
 use DeepLife_API\Model\User;
@@ -65,4 +66,9 @@ interface Service
     public function GetAll_Country();
 
     public function AddNew_UserReport(UserReport $userReport);
+
+    public function GetAll_NewsFeeds();
+    public function GetNew_NewsFeeds(User $user);
+    public function AddNew_NewsFeed_log(NewsFeed $news);
+    public function Delete_All_NewsFeed_Log(User $user);
 }

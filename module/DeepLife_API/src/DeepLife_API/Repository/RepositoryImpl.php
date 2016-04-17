@@ -13,6 +13,7 @@ use DeepLife_API\Model\Answers;
 use DeepLife_API\Model\Country;
 use DeepLife_API\Model\Disciple;
 use DeepLife_API\Model\Hydrator;
+use DeepLife_API\Model\NewsFeed;
 use DeepLife_API\Model\Questions;
 use DeepLife_API\Model\Report;
 use DeepLife_API\Model\Schedule;
@@ -478,6 +479,67 @@ class RepositoryImpl implements RepositoryInterface
         $statement = $sql->prepareStatementForSqlObject($insert);
         $result = $statement->execute();
         return $result->valid();
+    }
+
+    public function GetAll_NewsFeeds()
+    {
+        $row_sql = 'SELECT * FROM news_feeds';
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Extract($posts,new NewsFeed());
+    }
+
+    public function GetNew_NewsFeeds(User $user)
+    {
+        $row_sql = 'SELECT * FROM news_feeds WHERE news_feeds.id NOT IN( SELECT news_feeds_log.news_feed_id FROM news_feeds_log WHERE news_feeds_log.user_Id = '.$user->getId().')';
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Extract($posts,new NewsFeed());
+    }
+
+    public function AddNew_NewsFeed_log(NewsFeed $news)
+    {
+        /**
+         * @var \Zend\Db\Sql\Sql $ sql
+         */
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $insert = $sql->insert()
+            ->values(array(
+                'user_id'=>$news->getUserId(),
+                'news_feed_id'=>$news->getId(),
+            ))
+            ->into('news_feeds_log');
+        $statement = $sql->prepareStatementForSqlObject($insert);
+        $result = $statement->execute();
+        return $result->valid();
+    }
+
+    public function Delete_All_NewsFeed_Log(User $user)
+    {
+        $row_sql = 'DELETE FROM news_feeds_log WHERE news_feeds_log.user_id = '.$user->getId();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            return true;
+        }
+        return false;
     }
 
 

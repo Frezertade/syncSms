@@ -346,6 +346,11 @@ class apiController extends AbstractRestfulController
             $found['Disciples'] = $smsService->GetAll_Disciples($this->api_user);
             $found['Schedules'] = $smsService->GetAll_Schedule($this->api_user);
             $found['Questions'] = $smsService->GetAll_Question();
+            /**
+             * @var \DeepLife_API\Model\User $profile
+             */
+            $profile = $smsService->Get_User($this->api_user);
+            $found['Profile'] = $profile->getArray();
             $found['Reports'] = $smsService->GetAll_Report();
             $this->api_Response['Response'] = $found;
         }elseif($service == $this->api_Services[17]) {

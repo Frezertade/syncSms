@@ -73,6 +73,7 @@ class RepositoryImpl implements RepositoryInterface
                 'phone_no'=>$user->getPhoneNo(),
                 'mentor_id'=>$user->getMentorId(),
                 'gender'=>$user->getGender(),
+                'role_id'=>$user->getRoleId(),
                 'stage'=>$user->getStage(),
                 'picture'=>$user->getPicture(),
             ))

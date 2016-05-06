@@ -22,6 +22,7 @@ class User
     protected $picture;
     protected $gender;
     protected $stage;
+    protected $role_id;
     protected $created;
 
     /**
@@ -203,6 +204,22 @@ class User
     /**
      * @return mixed
      */
+    public function getRoleId()
+    {
+        return $this->role_id;
+    }
+
+    /**
+     * @param mixed $role_id
+     */
+    public function setRoleId($role_id)
+    {
+        $this->role_id = $role_id;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getStage()
     {
         return $this->stage;
@@ -227,6 +244,7 @@ class User
             'phone_no' => $this->getPhoneNo(),
             'mentor_id' => $this->getMentorId(),
             'stage' => $this->getStage(),
+            'role_id' => $this->getRoleId(),
             'gender' => $this->getGender(),
             'picture' => $this->getPicture(),
             'created' => $this->getCreated(),

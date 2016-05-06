@@ -24,6 +24,7 @@ class Hydrator
                     $New_Data->setPhoneNo(isset($data['phone_no'])? $data['phone_no']:null);
                     $New_Data->setMentorId(isset($data['mentor_id'])? $data['mentor_id']:null);
                     $New_Data->setPicture(isset($data['picture'])? $data['picture']:null);
+                    $New_Data->setRoleId(isset($data['role_id'])? $data['role_id']:null);
                     $New_Data->setCreated(isset($data['created'])? $data['created']:null);
                     $Found[] = $New_Data;
                 }
@@ -215,6 +216,7 @@ class Hydrator
                     $New_Data->setMentorId(isset($data['mentor_id'])? $data['mentor_id']:null);
                     $New_Data->setPicture(isset($data['picture'])? $data['picture']:null);
                     $New_Data->setStage(isset($data['stage'])? $data['stage']:null);
+                    $New_Data->setRoleId(isset($data['role_id'])? $data['role_id']:null);
                     $New_Data->setGender(isset($data['gender'])? $data['gender']:null);
                     $New_Data->setCreated(isset($data['created'])? $data['created']:null);
                     $Found = $New_Data;

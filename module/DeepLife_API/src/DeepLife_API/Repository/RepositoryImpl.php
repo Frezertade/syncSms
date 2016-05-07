@@ -17,6 +17,7 @@ use DeepLife_API\Model\NewsFeed;
 use DeepLife_API\Model\Questions;
 use DeepLife_API\Model\Report;
 use DeepLife_API\Model\Schedule;
+use DeepLife_API\Model\Testimony;
 use DeepLife_API\Model\User;
 use DeepLife_API\Model\User_Role;
 use DeepLife_API\Model\UserReport;
@@ -393,6 +394,23 @@ class RepositoryImpl implements RepositoryInterface
         return $hydrator->Extract($posts,new Questions());
     }
 
+    public function Get_Question(User $user)
+    {
+        $row_sql = 'SELECT * FROM questions WHERE questions.country_id = '.$user->getCountry();
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Extract($posts,new Questions());
+    }
+
+
     public function AddNew_Answer(Answers $answers)
     {
         /**
@@ -435,6 +453,22 @@ class RepositoryImpl implements RepositoryInterface
     public function GetAll_Report()
     {
         $row_sql = 'SELECT * FROM report_forms';
+        $statement = $this->adapter->query($row_sql);
+        $result = $statement->execute();
+        $posts = null;
+        if($result->count()>0){
+            while($result->valid()){
+                $posts[] = $result->current();
+                $result->next();
+            }
+        }
+        $hydrator = new Hydrator();
+        return $hydrator->Extract($posts,new Report());
+    }
+
+    public function Get_Report(User $user)
+    {
+        $row_sql = 'SELECT * FROM report_forms WHERE report_forms.country_id = '.$user->getCountry();
         $statement = $this->adapter->query($row_sql);
         $result = $statement->execute();
         $posts = null;
@@ -542,6 +576,20 @@ class RepositoryImpl implements RepositoryInterface
         }
         return false;
     }
-
+    public function AddTestimony(Testimony $testimony)
+    {
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $insert = $sql->insert()
+            ->values(array(
+                'id'=>$testimony->getId(),
+                'user_id'=>$testimony->getUserId(),
+                'title'=>$testimony->getTitle(),
+                'detail'=>$testimony->getDetail(),
+            ))
+            ->into('testimony');
+        $statement = $sql->prepareStatementForSqlObject($insert);
+        $result = $statement->execute();
+        return $result->valid();
+    }
 
 }

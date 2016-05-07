@@ -14,6 +14,7 @@ use DeepLife_API\Model\Disciple;
 use DeepLife_API\Model\NewsFeed;
 use DeepLife_API\Model\Questions;
 use DeepLife_API\Model\Schedule;
+use DeepLife_API\Model\Testimony;
 use DeepLife_API\Model\User;
 use DeepLife_API\Model\User_Role;
 use DeepLife_API\Model\UserReport;
@@ -56,12 +57,14 @@ interface Service
 
     public function AddNew_Question(Questions $questions);
     public function GetAll_Question();
+    public function Get_Question(User $user);
 
     public function AddNew_Answer(Answers $answers);
     public function GetAll_Answers(User $user);
 
     public function AddNew_Report(User $user);
     public function GetAll_Report();
+    public function Get_Report(User $user);
 
     public function GetAll_Country();
 
@@ -71,4 +74,6 @@ interface Service
     public function GetNew_NewsFeeds(User $user);
     public function AddNew_NewsFeed_log(NewsFeed $news);
     public function Delete_All_NewsFeed_Log(User $user);
+
+    public function AddTestimony(Testimony $testimony);
 }

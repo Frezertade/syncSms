@@ -79,5 +79,13 @@ class Testimony
     {
         $this->detail = $detail;
     }
+    public function getArray(){
+        return array(
+            'id' => $this->getId(),
+            'user_id' => $this->getUserId(),
+            'title' => $this->getTitle(),
+            'detail' => $this->getDetail(),
+        );
+    }
 
 }
